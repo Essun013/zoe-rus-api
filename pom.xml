@@ -6,7 +6,15 @@
 
     <groupId>com.zoe.rus</groupId>
     <artifactId>zoe-rus-api</artifactId>
+    <packaging>pom</packaging>
     <version>0.1.00-RELEASE</version>
+    <modules>
+        <module>zoe-rus-api-common</module>
+        <module>zoe-rus-api-uc</module>
+        <module>zoe-rus-api-kb</module>
+        <module>zoe-rus-api-milepost</module>
+        <module>zoe-rus-api-web</module>
+    </modules>
 
 
 </project>

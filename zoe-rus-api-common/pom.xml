@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.zoe.spore</groupId>
             <artifactId>zoe-spore-common</artifactId>
-            <version>1.0.05-RELEASE</version>
+            <version>[1,)</version>
         </dependency>
     </dependencies>
 </project>

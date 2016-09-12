@@ -1,6 +1,7 @@
 package com.zoe.rus.classify;
 
 import com.zoe.commons.util.Validator;
+import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,5 +43,27 @@ public class ClassifyServiceImpl implements ClassifyService {
             return new ArrayList<>();
 
         return classifyDao.query(key, parent).getList();
+    }
+
+    @Override
+    public void delete(String key) {
+        classifyDao.delete(key);
+    }
+
+    @Override
+    public void save(ClassifyModel classify) {
+        classifyDao.save(classify);
+    }
+
+    @Override
+    public JSONArray query(String key) {
+        JSONArray array = new JSONArray();
+
+        return array;
+    }
+
+    @Override
+    public ClassifyModel findById(String id) {
+        return classifyDao.findById(id);
     }
 }

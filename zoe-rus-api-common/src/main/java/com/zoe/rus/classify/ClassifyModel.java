@@ -1,7 +1,7 @@
 package com.zoe.rus.classify;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.commons.dao.model.ModelSupport;
+import com.zoe.rus.model.ModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.util.List;
 
 /**
  * @author lpw
@@ -17,13 +18,14 @@ import javax.persistence.Table;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = ClassifyModel.NAME)
 @Table(name = "t_common_classify")
-public class ClassifyModel extends ModelSupport {
+public class ClassifyModel extends ModelSupport implements Comparable<ClassifyModel> {
     static final String NAME = "rus.common.classify";
 
     private String key;
     private String parent;
     private int sort;
     private String name;
+    private List<ClassifyModel> children;
 
     @Jsonable
     @Column(name = "c_key")
@@ -63,5 +65,18 @@ public class ClassifyModel extends ModelSupport {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public List<ClassifyModel> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ClassifyModel> children) {
+        this.children = children;
+    }
+
+    @Override
+    public int compareTo(ClassifyModel o) {
+        return sort - o.sort;
     }
 }

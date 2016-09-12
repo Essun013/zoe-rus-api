@@ -1,7 +1,7 @@
 package com.zoe.rus.kb.keyword;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.commons.dao.model.ModelSupport;
+import com.zoe.rus.model.ModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;

@@ -12,6 +12,16 @@
     <url>http://maven.apache.org</url>
     <dependencies>
         <dependency>
+            <groupId>com.zoe.rus</groupId>
+            <artifactId>zoe-rus-api-kb</artifactId>
+            <version>0.1.00-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.zoe.rus</groupId>
+            <artifactId>zoe-rus-api-milepost</artifactId>
+            <version>0.1.00-RELEASE</version>
+        </dependency>
+        <dependency>
             <groupId>com.zoe.commons</groupId>
             <artifactId>zoe-commons-web</artifactId>
             <version>[1,)</version>

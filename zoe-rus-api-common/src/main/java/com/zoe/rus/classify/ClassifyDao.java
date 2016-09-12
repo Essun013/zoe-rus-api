@@ -11,4 +11,6 @@ interface ClassifyDao {
     ClassifyModel findById(String id);
 
     void save(ClassifyModel classify);
+
+    void delete(String key);
 }

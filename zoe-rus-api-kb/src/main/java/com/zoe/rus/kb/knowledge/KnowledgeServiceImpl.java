@@ -118,7 +118,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         KnowledgeModel knowledge = new KnowledgeModel();
         knowledge.setClassify(classify.getId());
         knowledge.setSort(converter.toInt(name.substring(0, 2)));
-        knowledge.setSubject(name.substring(2, name.length() - 2));
+        knowledge.setSubject(name.substring(2, name.length() - 3));
         knowledge.setContent(new String(io.read(md.getAbsolutePath())));
         Set<String> kws = new HashSet<>();
         List<String> mps = new ArrayList<>();

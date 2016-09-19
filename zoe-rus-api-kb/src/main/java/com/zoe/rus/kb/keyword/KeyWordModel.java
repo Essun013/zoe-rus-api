@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Component(KeyWordModel.NAME + ".model")
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = KeyWordModel.NAME)
-@Table(name = "t_common_classify")
+@Table(name = "t_kb_key_word")
 public class KeyWordModel extends ModelSupport {
     static final String NAME = "rus.kb.key-word";
 

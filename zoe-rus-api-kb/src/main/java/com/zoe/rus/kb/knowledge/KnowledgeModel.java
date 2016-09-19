@@ -24,6 +24,7 @@ public class KnowledgeModel extends ModelSupport {
     private int sort;
     private String subject;
     private String content;
+    private String html;
 
     @Jsonable
     @Column(name = "c_classify")
@@ -63,5 +64,15 @@ public class KnowledgeModel extends ModelSupport {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Jsonable
+    @Column(name = "c_html")
+    public String getHtml() {
+        return html;
+    }
+
+    public void setHtml(String html) {
+        this.html = html;
     }
 }

@@ -26,4 +26,11 @@ public class KnowledgeCtrl {
 
         return html == null ? "" : html;
     }
+
+    @Execute(name = "reload")
+    public Object reload() {
+        knowledgeService.reload();
+
+        return "";
+    }
 }

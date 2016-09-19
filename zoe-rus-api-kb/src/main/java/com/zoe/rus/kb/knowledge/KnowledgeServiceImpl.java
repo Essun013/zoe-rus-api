@@ -1,12 +1,11 @@
 package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.cache.Cache;
-import com.zoe.commons.scheduler.MinuteJob;
-import com.zoe.commons.util.Context;
-import com.zoe.commons.util.Converter;
-import com.zoe.commons.util.Io;
+import com.zoe.commons.util.*;
 import com.zoe.rus.classify.ClassifyModel;
 import com.zoe.rus.classify.ClassifyService;
+import com.zoe.rus.kb.keyword.KeyWordService;
+import net.sf.json.JSONObject;
 import org.commonmark.html.HtmlRenderer;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
@@ -14,16 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author lpw
  */
 @Service(KnowledgeModel.NAME + ".service")
-public class KnowledgeServiceImpl implements KnowledgeService, MinuteJob {
+public class KnowledgeServiceImpl implements KnowledgeService {
     private static final String CLASSIFY_KEY = KnowledgeModel.NAME + ".classify";
     private static final String CACHE_HTML = KnowledgeModel.NAME + ".service.html:";
 
@@ -34,11 +30,19 @@ public class KnowledgeServiceImpl implements KnowledgeService, MinuteJob {
     @Autowired
     protected Converter converter;
     @Autowired
+    protected Validator validator;
+    @Autowired
+    protected Json json;
+    @Autowired
     protected Io io;
     @Autowired
     protected ClassifyService classifyService;
     @Autowired
+    protected KeyWordService keyWordService;
+    @Autowired
     protected KnowledgeDao knowledgeDao;
+    protected Map<String, String> path;
+    protected Map<String, Set<String>> kws;
 
     @Override
     public String get(String id) {
@@ -49,88 +53,127 @@ public class KnowledgeServiceImpl implements KnowledgeService, MinuteJob {
             if (knowledge == null)
                 return null;
 
-            cache.put(key, html = toHtml(knowledge.getClassify(), knowledge.getContent()), false);
+            cache.put(key, html = knowledge.getHtml(), false);
         }
 
         return html;
     }
 
+    public void reload() {
+        classifyService.delete(CLASSIFY_KEY);
+        knowledgeDao.delete();
+        JSONObject json = new JSONObject();
+        path = new HashMap<>();
+        kws = new HashMap<>();
+        scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
+        keyWordService.save(kws);
+        kws = null;
+        path = null;
+    }
+
+    protected void scan(JSONObject pjson, JSONObject json, ClassifyModel parent, ClassifyModel classify, File file) {
+        String name = file.getName();
+        if (!file.isDirectory() || (parent != null && !validator.isMatchRegex("^[0-9]{2}.+", name)))
+            return;
+
+        if (name.endsWith(".md"))
+            knowledge(pjson, parent, file, name);
+        else
+            classify(json, parent, classify, file, name);
+        if (pjson != null && !json.isEmpty())
+            this.json.addAsArray(pjson, "children", json);
+    }
+
+    protected void classify(JSONObject json, ClassifyModel parent, ClassifyModel classify, File file, String name) {
+        if (parent != null) {
+            classify.setKey(CLASSIFY_KEY);
+            classify.setSort(converter.toInt(name.substring(0, 2)));
+            classify.setName(name.substring(2));
+            classifyService.save(classify);
+            if (parent.getChildren() == null)
+                parent.setChildren(new ArrayList<>());
+            parent.getChildren().add(classify);
+
+            json.put("id", classify.getId());
+            json.put("name", classify.getName());
+        }
+        File[] files = file.listFiles();
+        if (files == null)
+            return;
+
+        Arrays.sort(files, (File o1, File o2) -> o1.getName().compareTo(o2.getName()));
+        for (File f : files) {
+            JSONObject object = new JSONObject();
+            ClassifyModel child = new ClassifyModel();
+            child.setParent(classify.getId());
+            scan(json, object, classify, child, f);
+        }
+    }
+
+    protected void knowledge(JSONObject json, ClassifyModel classify, File file, String name) {
+        File md = getMdFile(file);
+        if (md == null)
+            return;
+
+        KnowledgeModel knowledge = new KnowledgeModel();
+        knowledge.setClassify(classify.getId());
+        knowledge.setSort(converter.toInt(name.substring(0, 2)));
+        knowledge.setSubject(name.substring(2, name.length() - 2));
+        knowledge.setContent(new String(io.read(md.getAbsolutePath())));
+        Set<String> kws = new HashSet<>();
+        List<String> mps = new ArrayList<>();
+        knowledge.setHtml(toHtml(kws, mps, path(classify.getId()) + "/" + name + "/", knowledge.getContent()));
+        knowledgeDao.save(knowledge);
+        this.kws.put(knowledge.getId(), kws);
+
+        if (json == null)
+            return;
+
+        JSONObject object = new JSONObject();
+        object.put("id", knowledge.getId());
+        object.put("subject", knowledge.getSubject());
+        this.json.addAsArray(json, "knowledge", object);
+    }
+
+    protected File getMdFile(File file) {
+        File[] files = file.listFiles();
+        if (files == null)
+            return null;
+
+        for (File f : files)
+            if (f.getName().equals("kb.md"))
+                return f;
+
+        return null;
+    }
+
     protected String path(String id) {
+        if (path.containsKey(id))
+            return path.get(id);
+
         StringBuilder path = new StringBuilder();
         while (true) {
             if (id == null)
                 return path.toString();
 
             ClassifyModel classify = classifyService.findById(id);
-            if (classify == null)
-                return path.toString();
+            if (classify == null) {
+                this.path.put(id, path.toString());
+
+                return this.path.get(id);
+            }
 
             path.insert(0, "/" + converter.toString(classify.getSort(), "00") + classify.getName());
             id = classify.getParent();
         }
     }
 
-    protected String toHtml(String classify, String md) {
+    protected String toHtml(Set<String> kws, List<String> mps, String path, String md) {
         Parser parser = Parser.builder().build();
         Node node = parser.parse(md);
-        node.accept(new KnowledgeVisitor(path(classify)));
+        node.accept(new KnowledgeVisitor(kws, mps, path));
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         return renderer.render(node);
-    }
-
-    @Override
-    public void executeMinuteJob() {
-        if (Calendar.getInstance().get(Calendar.MINUTE) % 5 > 0)
-            return;
-
-        classifyService.delete(CLASSIFY_KEY);
-        knowledgeDao.delete();
-        ClassifyModel classify = new ClassifyModel();
-        scan(null, classify, new File(context.getAbsolutePath(PATH)));
-    }
-
-    protected void scan(ClassifyModel parent, ClassifyModel classify, File file) {
-        directory(parent, classify, file);
-        file(parent, file);
-    }
-
-    protected void directory(ClassifyModel parent, ClassifyModel classify, File file) {
-        String name = file.getName();
-        if (!file.isDirectory() || name.equals("img"))
-            return;
-
-        if (parent != null) {
-            classify.setKey(CLASSIFY_KEY);
-            classify.setSort(converter.toInt(name.substring(0, 2)));
-            classify.setName(name.substring(2));
-            classifyService.save(classify);
-        }
-        List<ClassifyModel> children = new ArrayList<>();
-        for (File f : file.listFiles()) {
-            ClassifyModel child = new ClassifyModel();
-            child.setParent(classify.getId());
-            scan(classify, child, f);
-            children.add(child);
-        }
-        if (children.isEmpty())
-            return;
-
-        Collections.sort(children);
-        classify.setChildren(children);
-    }
-
-    protected void file(ClassifyModel classify, File file) {
-        String name = file.getName();
-        int indexOf = name.lastIndexOf('.');
-        if (!file.isFile() || indexOf == -1 || !name.substring(indexOf + 1).equals("md"))
-            return;
-
-        KnowledgeModel knowledge = new KnowledgeModel();
-        knowledge.setClassify(classify.getId());
-        knowledge.setSort(converter.toInt(name.substring(0, 2)));
-        knowledge.setSubject(name.substring(2, indexOf));
-        knowledge.setContent(new String(io.read(file.getAbsolutePath())));
-        knowledgeDao.save(knowledge);
     }
 }

@@ -32,6 +32,7 @@ CREATE TABLE t_kb_knowledge
   c_sort INT DEFAULT 0 COMMENT '显示顺序',
   c_subject VARCHAR(255) NOT NULL COMMENT '标题',
   c_content TEXT DEFAULT NULL COMMENT '内容',
+  c_html TEXT DEFAULT NULL COMMENT 'HTML内容',
 
   PRIMARY KEY pk_kb_knowledge(c_id),
   KEY k_kb_knowledge_classify(c_classify)

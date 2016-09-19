@@ -20,8 +20,8 @@ class KeyWordDaoImpl implements KeyWordDao {
     }
 
     @Override
-    public void delete(String knowledge) {
-        liteOrm.delete(new LiteQuery(KeyWordModel.class).where("c_knowledge=?"), new Object[]{knowledge});
+    public void delete() {
+        liteOrm.delete(new LiteQuery(KeyWordModel.class), null);
     }
 
     @Override

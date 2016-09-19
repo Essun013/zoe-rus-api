@@ -8,7 +8,7 @@ import com.zoe.commons.dao.orm.PageList;
 interface KeyWordDao {
     PageList<KeyWordModel> query();
 
-    void delete(String knowledge);
+    void delete();
 
     void save(KeyWordModel model);
 }

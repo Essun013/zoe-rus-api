@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -37,13 +38,15 @@ public class KeyWordServiceImpl implements KeyWordService {
     }
 
     @Override
-    public void save(String words, String knowledge) {
-        keyWordDao.delete(knowledge);
-        for (String word : converter.toArray(words, ",")) {
-            KeyWordModel model = new KeyWordModel();
-            model.setWord(word.trim());
-            model.setKnowledge(knowledge);
-            keyWordDao.save(model);
-        }
+    public void save(Map<String, Set<String>> map) {
+        keyWordDao.delete();
+        map.forEach((knowledge, words) -> {
+            for (String word : words) {
+                KeyWordModel model = new KeyWordModel();
+                model.setWord(word.trim());
+                model.setKnowledge(knowledge);
+                keyWordDao.save(model);
+            }
+        });
     }
 }

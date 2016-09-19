@@ -7,4 +7,6 @@ public interface KnowledgeService {
     String PATH="/kb";
 
     String get(String id);
+
+    void reload();
 }

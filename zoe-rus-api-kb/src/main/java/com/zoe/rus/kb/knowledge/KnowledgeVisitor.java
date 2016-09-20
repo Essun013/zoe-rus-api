@@ -28,6 +28,7 @@ class KnowledgeVisitor extends AbstractVisitor {
             String[] array = literal.split(" ");
             for (int i = 1; i < array.length; i++)
                 kws.add(array[i]);
+            text.setLiteral("");
 
             return;
         }

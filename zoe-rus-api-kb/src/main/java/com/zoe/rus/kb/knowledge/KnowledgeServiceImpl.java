@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -36,11 +37,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Autowired
     protected Io io;
     @Autowired
+    protected Logger logger;
+    @Autowired
     protected ClassifyService classifyService;
     @Autowired
     protected KeyWordService keyWordService;
     @Autowired
     protected KnowledgeDao knowledgeDao;
+    protected String md4solr;
     protected Map<String, String> path;
     protected Map<String, Set<String>> kws;
 
@@ -59,16 +63,39 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return html;
     }
 
+    @Override
     public void reload() {
-        classifyService.delete(CLASSIFY_KEY);
-        knowledgeDao.delete();
+        clean();
         JSONObject json = new JSONObject();
-        path = new HashMap<>();
-        kws = new HashMap<>();
         scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
         keyWordService.save(kws);
-        kws = null;
-        path = null;
+        try {
+            Runtime.getRuntime().exec("sh " + context.getAbsolutePath("/WEB-INF/solr.sh")
+                    + " /home/lpw/soft/solr-6.2.0 " + md4solr);
+        } catch (IOException e) {
+            logger.warn(e, "执行solr脚本时发生异常！");
+        }
+    }
+
+    protected void clean() {
+        classifyService.delete(CLASSIFY_KEY);
+        knowledgeDao.delete();
+        if (kws == null)
+            kws = new HashMap<>();
+        else
+            kws.clear();
+        if (path == null)
+            path = new HashMap<>();
+        else
+            path.clear();
+
+        md4solr = context.getAbsolutePath(PATH + "/md4solr") + "/";
+        File md4solr = new File(this.md4solr);
+        md4solr.mkdirs();
+        File[] files = md4solr.listFiles();
+        if (files != null)
+            for (File file : files)
+                file.delete();
     }
 
     protected void scan(JSONObject pjson, JSONObject json, ClassifyModel parent, ClassifyModel classify, File file) {
@@ -111,7 +138,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     protected void knowledge(JSONObject json, ClassifyModel classify, File file, String name) {
-        File md = getMdFile(file);
+        String md = getMdFile(file);
         if (md == null)
             return;
 
@@ -119,12 +146,13 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         knowledge.setClassify(classify.getId());
         knowledge.setSort(converter.toInt(name.substring(0, 2)));
         knowledge.setSubject(name.substring(2, name.length() - 3));
-        knowledge.setContent(new String(io.read(md.getAbsolutePath())));
+        knowledge.setContent(new String(io.read(md)));
         Set<String> kws = new HashSet<>();
         List<String> mps = new ArrayList<>();
         knowledge.setHtml(toHtml(kws, mps, path(classify.getId()) + "/" + name + "/", knowledge.getContent()));
         knowledgeDao.save(knowledge);
         this.kws.put(knowledge.getId(), kws);
+        io.copy(md, md4solr + knowledge.getId() + ".md");
 
         if (json == null)
             return;
@@ -135,14 +163,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         this.json.addAsArray(json, "knowledge", object);
     }
 
-    protected File getMdFile(File file) {
+    protected String getMdFile(File file) {
         File[] files = file.listFiles();
         if (files == null)
             return null;
 
         for (File f : files)
             if (f.getName().equals("kb.md"))
-                return f;
+                return f.getAbsolutePath();
 
         return null;
     }

@@ -23,7 +23,7 @@ class KnowledgeVisitor extends AbstractVisitor {
 
     @Override
     public void visit(Text text) {
-        String literal = text.getLiteral();
+        String literal = text.getLiteral().trim();
         if (literal.startsWith("@KW ")) {
             String[] array = literal.split(" ");
             for (int i = 1; i < array.length; i++)

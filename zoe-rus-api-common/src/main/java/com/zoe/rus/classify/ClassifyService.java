@@ -1,13 +1,14 @@
 package com.zoe.rus.classify;
 
-import net.sf.json.JSONArray;
-
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author lpw
  */
 public interface ClassifyService {
+    String EXISTS_VALIDATOR = ClassifyModel.NAME + ".validator.exists";
+
     void save(String id, String key, String parent, int sort, String name);
 
     List<ClassifyModel> query(String key, String parent);
@@ -16,7 +17,9 @@ public interface ClassifyService {
 
     void save(ClassifyModel classify);
 
-    JSONArray query(String key);
-
     ClassifyModel findById(String id);
+
+    Set<String> parent(String id);
+
+    Set<String> children(String id);
 }

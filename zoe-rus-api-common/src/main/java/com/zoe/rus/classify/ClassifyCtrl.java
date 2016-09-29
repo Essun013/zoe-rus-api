@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 /**
+ * 分类管理。
  * @auth lpw
  */
 @Controller(ClassifyModel.NAME + ".ctrl")
@@ -26,7 +27,7 @@ public class ClassifyCtrl {
      * key 引用键。
      * parent 上级分类ID。
      *
-     * @return []。
+     * @return [{key,parent,sort,name}]。
      */
     @Execute(name = "query", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameters = {"key", "parent"}, failureCode = 1, failureArgKeys = {ClassifyModel.NAME + ".key-parent"})

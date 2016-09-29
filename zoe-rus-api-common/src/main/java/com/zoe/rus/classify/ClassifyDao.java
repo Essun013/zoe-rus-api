@@ -13,4 +13,6 @@ interface ClassifyDao {
     void save(ClassifyModel classify);
 
     void delete(String key);
+
+    PageList<ClassifyModel> children(String parent);
 }

@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author lpw
@@ -56,14 +58,39 @@ public class ClassifyServiceImpl implements ClassifyService {
     }
 
     @Override
-    public JSONArray query(String key) {
-        JSONArray array = new JSONArray();
-
-        return array;
+    public ClassifyModel findById(String id) {
+        return classifyDao.findById(id);
     }
 
     @Override
-    public ClassifyModel findById(String id) {
-        return classifyDao.findById(id);
+    public Set<String> parent(String id) {
+        Set<String> set = new HashSet<>();
+        parent(set, id);
+
+        return set;
+    }
+
+    protected void parent(Set<String> set, String id) {
+        ClassifyModel classify = classifyDao.findById(id);
+        if (classify == null || classify.getParent() == null)
+            return;
+
+        set.add(classify.getParent());
+        parent(set, classify.getParent());
+    }
+
+    @Override
+    public Set<String> children(String id) {
+        Set<String> set = new HashSet<>();
+        children(set, id);
+
+        return set;
+    }
+
+    protected void children(Set<String> set, String parent) {
+        classifyDao.children(parent).getList().forEach(child -> {
+            set.add(child.getId());
+            children(child.getId());
+        });
     }
 }

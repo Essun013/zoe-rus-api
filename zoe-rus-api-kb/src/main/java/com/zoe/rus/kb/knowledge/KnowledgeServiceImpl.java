@@ -202,6 +202,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         node.accept(new KnowledgeVisitor(kws, mps, path));
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
-        return renderer.render(node);
+        return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_P, "").replaceAll(">\\s+",">");
     }
 }

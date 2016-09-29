@@ -11,6 +11,9 @@ import java.util.Set;
  * @author lpw
  */
 class KnowledgeVisitor extends AbstractVisitor {
+    static final String EMPTY = "KNOWLEDGE_VISITOR_EMPTY";
+    static final String EMPTY_P = "<p>" + EMPTY + "</p>";
+
     private Set<String> kws;
     private List<String> mps;
     private String path;
@@ -28,7 +31,12 @@ class KnowledgeVisitor extends AbstractVisitor {
             String[] array = literal.split(" ");
             for (int i = 1; i < array.length; i++)
                 kws.add(array[i]);
-            text.setLiteral("");
+            text.setLiteral(EMPTY);
+
+            return;
+        }
+        if (literal.startsWith("@MP ")) {
+            text.setLiteral(EMPTY);
 
             return;
         }

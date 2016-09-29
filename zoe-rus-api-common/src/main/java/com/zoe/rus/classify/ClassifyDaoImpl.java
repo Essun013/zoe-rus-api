@@ -37,4 +37,9 @@ class ClassifyDaoImpl implements ClassifyDao {
     public void delete(String key) {
         liteOrm.delete(new LiteQuery(ClassifyModel.class).where("c_key=?"), new Object[]{key});
     }
+
+    @Override
+    public PageList<ClassifyModel> children(String parent) {
+        return liteOrm.query(new LiteQuery(ClassifyModel.class).where("c_parent=?"), new Object[]{parent});
+    }
 }

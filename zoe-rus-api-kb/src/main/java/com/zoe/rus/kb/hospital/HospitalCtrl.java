@@ -45,7 +45,7 @@ public class HospitalCtrl {
      *
      * @return ""。
      */
-    @Execute(name = "save", validates = {
+    @Execute(name = "save", validates = {@Validate(validator = Validators.SIGN),
             @Validate(validator = Validators.NOT_EMPTY, parameter = "region", failureCode = 1, failureArgKeys = {HospitalModel.NAME + ".region"}),
             @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 2, failureArgKeys = {HospitalModel.NAME + ".name"}),
             @Validate(validator = Validators.MAX_LENGTH, number = {100}, parameter = "name", failureCode = 3, failureArgKeys = {HospitalModel.NAME + ".name"}),

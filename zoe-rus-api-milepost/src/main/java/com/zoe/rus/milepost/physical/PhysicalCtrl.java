@@ -7,6 +7,6 @@ import org.springframework.stereotype.Controller;
  * @author lpw
  */
 @Controller(PhysicalModel.NAME + ".ctrl")
-@Execute(name = "/kb/physical/", code = "0")
+@Execute(name = "/kb/physical/", code = "31")
 public class PhysicalCtrl {
 }

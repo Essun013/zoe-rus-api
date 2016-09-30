@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 
 /**
  * 分类管理。
+ *
  * @auth lpw
  */
 @Controller(ClassifyModel.NAME + ".ctrl")
@@ -29,7 +30,7 @@ public class ClassifyCtrl {
      *
      * @return [{key,parent,sort,name}]。
      */
-    @Execute(name = "query", validates = {
+    @Execute(name = "query", validates = {@Validate(validator = Validators.SIGN),
             @Validate(validator = Validators.NOT_EMPTY, parameters = {"key", "parent"}, failureCode = 1, failureArgKeys = {ClassifyModel.NAME + ".key-parent"})
     })
     public Object query() {
@@ -46,7 +47,7 @@ public class ClassifyCtrl {
      *
      * @return ""
      */
-    @Execute(name = "save", validates = {
+    @Execute(name = "save", validates = {@Validate(validator = Validators.SIGN),
             @Validate(validator = Validators.NOT_EMPTY, parameters = {"id", "key", "parent"}, failureCode = 11, failureArgKeys = {ClassifyModel.NAME + ".id-key-parent"}),
             @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 12, failureArgKeys = {ClassifyModel.NAME + ".name"}),
             @Validate(validator = Validators.MAX_LENGTH, parameter = "name", number = {100}, failureCode = 13, failureArgKeys = {ClassifyModel.NAME + ".name"})

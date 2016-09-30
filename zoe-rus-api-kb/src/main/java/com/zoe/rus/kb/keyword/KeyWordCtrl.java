@@ -7,10 +7,11 @@ import org.springframework.stereotype.Controller;
 
 /**
  * 关键词。
+ *
  * @author lpw
  */
 @Controller(KeyWordModel.NAME + ".ctrl")
-@Execute(name = "/kb/key-word/")
+@Execute(name = "/kb/key-word/", code = "22")
 public class KeyWordCtrl {
     @Autowired
     protected Request request;
@@ -19,6 +20,7 @@ public class KeyWordCtrl {
 
     /**
      * 获取关键词。
+     *
      * @return []。
      */
     @Execute(name = "words")

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
  * @author lpw
  */
 @Controller(HospitalModel.NAME + ".ctrl")
-@Execute(name = "/kb/hospital/", code = "20")
+@Execute(name = "/kb/hospital/", key = HospitalModel.NAME, code = "20")
 public class HospitalCtrl {
     @Autowired
     protected ModelHelper modelHelper;
@@ -46,12 +46,12 @@ public class HospitalCtrl {
      * @return ""。
      */
     @Execute(name = "save", validates = {@Validate(validator = Validators.SIGN),
-            @Validate(validator = Validators.NOT_EMPTY, parameter = "region", failureCode = 1, failureArgKeys = {HospitalModel.NAME + ".region"}),
-            @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 2, failureArgKeys = {HospitalModel.NAME + ".name"}),
-            @Validate(validator = Validators.MAX_LENGTH, number = {100}, parameter = "name", failureCode = 3, failureArgKeys = {HospitalModel.NAME + ".name"}),
-            @Validate(validator = Validators.MATCH_REGEX, string = {"^-?\\d{1,3}\\.\\d+$"}, parameter = "longitude", failureCode = 4, failureArgKeys = {HospitalModel.NAME + ".longitude"}),
-            @Validate(validator = Validators.MATCH_REGEX, string = {"^-?\\d{1,3}\\.\\d+$"}, parameter = "latitude", failureCode = 5, failureArgKeys = {HospitalModel.NAME + ".latitude"}),
-            @Validate(validator = ClassifyService.EXISTS_VALIDATOR, parameter = "region", failureCode = 6, failureArgKeys = {HospitalModel.NAME + ".region"})
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "region", failureCode = 1),
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 2),
+            @Validate(validator = Validators.MAX_LENGTH, number = {100}, parameter = "name", failureCode = 3),
+            @Validate(validator = Validators.MATCH_REGEX, string = {"^-?\\d{1,3}\\.\\d+$"}, parameter = "longitude", failureCode = 4),
+            @Validate(validator = Validators.MATCH_REGEX, string = {"^-?\\d{1,3}\\.\\d+$"}, parameter = "latitude", failureCode = 5),
+            @Validate(validator = ClassifyService.EXISTS_VALIDATOR, parameter = "region", failureCode = 6)
     })
     public Object save() {
         hospitalService.save(request.setToModel(new HospitalModel()));

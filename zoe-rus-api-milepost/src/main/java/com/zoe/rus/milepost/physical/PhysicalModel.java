@@ -18,11 +18,12 @@ import javax.persistence.Table;
 @Entity(name = PhysicalModel.NAME)
 @Table(name = "t_kb_physical")
 public class PhysicalModel extends ModelSupport {
-    static final String NAME = "kb.physical";
+    static final String NAME = "rus.milepost.physical";
 
     private String region; // 区域
     private String hospital; // 医院
     private int type; // 类型
+    private int sort; // 序号
     private String time; // 时间
     private String content; // 内容
     private String knowledge; // 知识
@@ -55,6 +56,16 @@ public class PhysicalModel extends ModelSupport {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Jsonable
+    @Column(name = "c_sort")
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     @Jsonable

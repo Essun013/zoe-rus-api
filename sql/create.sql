@@ -51,17 +51,18 @@ CREATE TABLE t_kb_hospital
   KEY k_kb_hospital_region(c_region)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS t_kb_physical;
-CREATE TABLE t_kb_physical
+DROP TABLE IF EXISTS t_milepost_physical;
+CREATE TABLE t_milepost_physical
 (
   c_id CHAR(36) NOT NULL COMMENT '主键',
   c_region CHAR(32) NOT NULL COMMENT '区域',
   c_hospital CHAR(32) DEFAULT NULL COMMENT '医院',
   c_type INT DEFAULT 0 COMMENT '类型',
+  c_sort INT DEFAULT 0 COMMENT '序号',
   c_time VARCHAR(255) DEFAULT NULL COMMENT '时间',
   c_content TEXT DEFAULT NULL COMMENT '内容',
   c_knowledge VARCHAR(255) DEFAULT NULL COMMENT '知识',
 
-  PRIMARY KEY pk_kb_physical(c_id),
-  KEY k_kb_physical_region(c_region)
+  PRIMARY KEY pk_milepost_physical(c_id),
+  KEY k_milepost_physical_region(c_region)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

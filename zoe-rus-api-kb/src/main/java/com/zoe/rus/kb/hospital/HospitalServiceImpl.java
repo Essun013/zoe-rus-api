@@ -57,4 +57,9 @@ public class HospitalServiceImpl implements HospitalService {
         cache.remove(CACHE_REGION + hospital.getRegion());
         classifyService.parent(hospital.getRegion()).forEach(region -> cache.remove(CACHE_REGION + region));
     }
+
+    @Override
+    public HospitalModel findById(String id) {
+        return hospitalDao.findById(id);
+    }
 }

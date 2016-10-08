@@ -14,7 +14,7 @@ import org.springframework.stereotype.Controller;
  * @auth lpw
  */
 @Controller(ClassifyModel.NAME + ".ctrl")
-@Execute(name = "/classify/", code = "10")
+@Execute(name = "/classify/", key = ClassifyModel.NAME, code = "10")
 public class ClassifyCtrl {
     @Autowired
     protected ModelHelper modelHelper;
@@ -49,8 +49,8 @@ public class ClassifyCtrl {
      */
     @Execute(name = "save", validates = {@Validate(validator = Validators.SIGN),
             @Validate(validator = Validators.NOT_EMPTY, parameters = {"id", "key", "parent"}, failureCode = 11, failureArgKeys = {ClassifyModel.NAME + ".id-key-parent"}),
-            @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 12, failureArgKeys = {ClassifyModel.NAME + ".name"}),
-            @Validate(validator = Validators.MAX_LENGTH, parameter = "name", number = {100}, failureCode = 13, failureArgKeys = {ClassifyModel.NAME + ".name"})
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 12),
+            @Validate(validator = Validators.MAX_LENGTH, parameter = "name", number = {100}, failureCode = 13)
     })
     public Object save() {
         classifyService.save(request.get("id"), request.get("key"), request.get("parent"), request.getAsInt("sort"), request.get("name"));

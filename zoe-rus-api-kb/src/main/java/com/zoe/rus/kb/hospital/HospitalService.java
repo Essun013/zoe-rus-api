@@ -11,4 +11,6 @@ public interface HospitalService {
     void save(HospitalModel hospital);
 
     void delete(String id);
+
+    HospitalModel findById(String id);
 }

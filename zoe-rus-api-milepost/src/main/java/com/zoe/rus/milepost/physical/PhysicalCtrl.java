@@ -56,6 +56,7 @@ public class PhysicalCtrl {
      * @return ""。
      */
     @Execute(name = "delete", validates = {
+            @Validate(validator = Validators.SIGN),
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 11),
             @Validate(validator = PhysicalService.VALIDATOR_EXISTS, parameter = "id", failureCode = 12)
     })

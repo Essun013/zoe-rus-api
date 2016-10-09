@@ -18,7 +18,7 @@
         </dependency>
         <dependency>
             <groupId>com.zoe.rus</groupId>
-            <artifactId>zoe-rus-api-milepost</artifactId>
+            <artifactId>zoe-rus-api-uc</artifactId>
             <version>0.1.00-RELEASE</version>
         </dependency>
         <dependency>

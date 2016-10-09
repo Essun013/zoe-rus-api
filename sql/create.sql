@@ -66,3 +66,33 @@ CREATE TABLE t_milepost_physical
   PRIMARY KEY pk_milepost_physical(c_id),
   KEY k_milepost_physical_region(c_region)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS t_uc_user;
+CREATE TABLE t_uc_user
+(
+  c_id CHAR(36) NOT NULL COMMENT '主键',
+  c_password CHAR(32) DEFAULT NULL COMMENT '密码',
+  c_name VARCHAR(255) DEFAULT NULL COMMENT '姓名',
+  c_nick VARCHAR(255) DEFAULT NULL COMMENT '昵称',
+  c_mobile CHAR(11) NOT NULL COMMENT '手机号',
+  c_portrait VARCHAR(255) DEFAULT NULL COMMENT '头像',
+  c_gender INT DEFAULT 0 COMMENT '性别：0-未知；1-男；2-女',
+  c_address VARCHAR(255) DEFAULT NULL COMMENT '地址',
+  c_birthday DATE DEFAULT NULL COMMENT '出生日期',
+  c_register DATETIME DEFAULT NULL COMMENT '注册时间',
+
+  PRIMARY KEY pk_uc_user(c_id),
+  KEY k_uc_user_mobile(c_mobile)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS t_uc_auth;
+CREATE TABLE t_uc_auth
+(
+  c_id CHAR(36) NOT NULL COMMENT '主键',
+  c_user CHAR(32) DEFAULT NULL COMMENT '用户ID',
+  c_username VARCHAR(255) NOT NULL COMMENT '用户名',
+  c_type INT DEFAULT 0 COMMENT '类型：0-机器码；1-自有账号；其他为第三方',
+
+  PRIMARY KEY pk_uc_auth(c_id),
+  UNIQUE KEY uk_uc_auth_username(c_username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

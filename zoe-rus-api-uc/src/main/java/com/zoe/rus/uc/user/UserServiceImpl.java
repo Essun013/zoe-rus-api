@@ -10,6 +10,7 @@ import com.zoe.commons.util.Security;
 import com.zoe.commons.util.Validator;
 import com.zoe.rus.uc.auth.AuthModel;
 import com.zoe.rus.uc.auth.AuthService;
+import com.zoe.rus.uc.home.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     protected Session session;
     @Autowired
+    protected HomeService homeService;
+    @Autowired
     protected AuthService authService;
     @Autowired
     protected UserDao userDao;
@@ -47,6 +50,8 @@ public class UserServiceImpl implements UserService {
         UserModel user = get();
         if (user == null)
             user = new UserModel();
+        if (gender == 2 && validator.isEmpty(user.getHome()))
+            user.setHome(homeService.create());
         user.setMobile(username);
         user.setPassword(password(password));
         if (!validator.isEmpty(name))
@@ -128,6 +133,13 @@ public class UserServiceImpl implements UserService {
             user.setAddress(model.getAddress());
         if (model.getBirthday() != null)
             user.setBirthday(model.getBirthday());
+        save(user);
+    }
+
+    @Override
+    public void home(String code) {
+        UserModel user = get();
+        user.setHome(homeService.findByCode(code).getCode());
         save(user);
     }
 

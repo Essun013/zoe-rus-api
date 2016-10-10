@@ -19,6 +19,20 @@ public class PhysicalCtrl {
     protected PhysicalService physicalService;
 
     /**
+     * 检索。
+     * pageSize 每页显示记录数。
+     * pageNum 当前显示页数。
+     *
+     * @return {page,list:[PhysicalModel]}。
+     */
+    @Execute(name = "query", validates = {
+            @Validate(validator = Validators.SIGN)
+    })
+    public Object query() {
+        return physicalService.query().toJson();
+    }
+
+    /**
      * 保存。
      * id 记录ID；为空则表示新增，否则为修改。
      * region 地区ID。

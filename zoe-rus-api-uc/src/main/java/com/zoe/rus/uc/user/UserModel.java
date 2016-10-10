@@ -23,6 +23,7 @@ import java.sql.Date;
 public class UserModel extends ModelSupport {
     static final String NAME = "rus.uc.user";
 
+    private String home; // 家庭
     private String password; // 密码
     private String name; // 姓名
     private String nick; // 昵称
@@ -32,6 +33,16 @@ public class UserModel extends ModelSupport {
     private String address; // 地址
     private Date birthday; // 出生日期
     private Timestamp register; // 注册时间
+
+    @Jsonable
+    @Column(name = "c_home")
+    public String getHome() {
+        return home;
+    }
+
+    public void setHome(String home) {
+        this.home = home;
+    }
 
     @Jsonable
     @Column(name = "c_password")

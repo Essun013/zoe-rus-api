@@ -9,6 +9,7 @@ import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.commons.util.Message;
 import com.zoe.rus.captcha.CaptchaService;
 import com.zoe.rus.uc.auth.AuthService;
+import com.zoe.rus.uc.home.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -133,6 +134,22 @@ public class UserCtrl {
         userService.modify(request.setToModel(new UserModel()));
 
         return templates.get().success(null, UserModel.NAME + ".modify.success");
+    }
+
+    /**
+     * 加入家庭。
+     * code 家庭编号。
+     *
+     * @return ""。
+     */
+    @Execute(name = "home", validates = {
+            @Validate(validator = UserService.VALIDATOR_SIGN_IN, failureCode = 11),
+            @Validate(validator = HomeService.VALIDATOR_EXISTS_CODE, parameter = "code", failureCode = 12)
+    })
+    public Object home() {
+        userService.home(request.get("code"));
+
+        return "";
     }
 
     /**

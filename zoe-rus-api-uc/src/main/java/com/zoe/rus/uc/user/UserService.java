@@ -64,6 +64,8 @@ public interface UserService {
      */
     void modify(UserModel model);
 
+    void home(String code);
+
     /**
      * 退出登入。
      */

@@ -54,7 +54,7 @@ CREATE TABLE t_kb_hospital
 DROP TABLE IF EXISTS t_milepost_physical;
 CREATE TABLE t_milepost_physical
 (
-  c_id CHAR(36) NOT NULL COMMENT '主键',
+  c_id CHAR(32) NOT NULL COMMENT '主键',
   c_region CHAR(32) NOT NULL COMMENT '区域',
   c_hospital CHAR(32) DEFAULT NULL COMMENT '医院',
   c_type INT DEFAULT 0 COMMENT '类型',
@@ -67,14 +67,27 @@ CREATE TABLE t_milepost_physical
   KEY k_milepost_physical_region(c_region)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+DROP TABLE IF EXISTS t_uc_home;
+CREATE TABLE t_uc_home
+(
+  c_id CHAR(32) NOT NULL COMMENT '主键',
+  c_code CHAR(8) NOT NULL COMMENT '编码',
+  c_name VARCHAR(255) DEFAULT NULL COMMENT '名称',
+  c_register DATETIME DEFAULT NULL COMMENT '创建时间',
+
+  PRIMARY KEY pk_uc_home(c_id),
+  UNIQUE KEY uk_uc_home_code(c_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS t_uc_user;
 CREATE TABLE t_uc_user
 (
-  c_id CHAR(36) NOT NULL COMMENT '主键',
+  c_id CHAR(32) NOT NULL COMMENT '主键',
+  c_home CHAR(32) NOT NULL COMMENT '家庭',
   c_password CHAR(32) DEFAULT NULL COMMENT '密码',
   c_name VARCHAR(255) DEFAULT NULL COMMENT '姓名',
   c_nick VARCHAR(255) DEFAULT NULL COMMENT '昵称',
-  c_mobile CHAR(11) NOT NULL COMMENT '手机号',
+  c_mobile CHAR(11) DEFAULT NULL COMMENT '手机号',
   c_portrait VARCHAR(255) DEFAULT NULL COMMENT '头像',
   c_gender INT DEFAULT 0 COMMENT '性别：0-未知；1-男；2-女',
   c_address VARCHAR(255) DEFAULT NULL COMMENT '地址',
@@ -82,13 +95,13 @@ CREATE TABLE t_uc_user
   c_register DATETIME DEFAULT NULL COMMENT '注册时间',
 
   PRIMARY KEY pk_uc_user(c_id),
-  KEY k_uc_user_mobile(c_mobile)
+  KEY k_uc_user_home(c_home)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS t_uc_auth;
 CREATE TABLE t_uc_auth
 (
-  c_id CHAR(36) NOT NULL COMMENT '主键',
+  c_id CHAR(32) NOT NULL COMMENT '主键',
   c_user CHAR(32) DEFAULT NULL COMMENT '用户ID',
   c_username VARCHAR(255) NOT NULL COMMENT '用户名',
   c_type INT DEFAULT 0 COMMENT '类型：0-机器码；1-自有账号；其他为第三方',

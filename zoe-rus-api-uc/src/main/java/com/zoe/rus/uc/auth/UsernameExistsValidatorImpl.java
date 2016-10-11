@@ -20,6 +20,6 @@ public class UsernameExistsValidatorImpl extends ValidatorSupport {
 
     @Override
     public boolean validate(ValidateWrapper validate, String parameter) {
-        return authService.findUser(parameter, 0) != null;
+        return authService.findByUsername(parameter) != null;
     }
 }

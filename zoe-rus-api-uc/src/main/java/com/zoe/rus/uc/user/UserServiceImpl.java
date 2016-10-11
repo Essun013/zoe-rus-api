@@ -134,6 +134,7 @@ public class UserServiceImpl implements UserService {
         if (model.getBirthday() != null)
             user.setBirthday(model.getBirthday());
         save(user);
+
     }
 
     @Override

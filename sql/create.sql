@@ -109,3 +109,18 @@ CREATE TABLE t_uc_auth
   PRIMARY KEY pk_uc_auth(c_id),
   UNIQUE KEY uk_uc_auth_username(c_username)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS t_uc_timeline;
+CREATE TABLE t_uc_timeline
+(
+  c_id CHAR(32) NOT NULL COMMENT '主键',
+  c_home CHAR(32) NOT NULL COMMENT '家庭',
+  c_sort INT DEFAULT 0 COMMENT '顺序',
+  c_type INT DEFAULT 0 COMMENT '类型：0-孕妈；1-宝宝',
+  c_start DATE NOT NULL COMMENT '开始日期',
+  c_day INT DEFAULT 0 COMMENT '天数',
+  c_end INT DEFAULT 0 COMMENT '结束：0-进行中；1-已结束',
+
+  PRIMARY KEY pk_uc_timeline(c_id),
+  KEY k_uc_timeline_home(c_home)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

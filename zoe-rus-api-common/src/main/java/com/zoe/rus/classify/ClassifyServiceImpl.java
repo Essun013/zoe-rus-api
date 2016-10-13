@@ -1,7 +1,7 @@
 package com.zoe.rus.classify;
 
+import com.zoe.commons.dao.orm.PageList;
 import com.zoe.commons.util.Validator;
-import net.sf.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +44,7 @@ public class ClassifyServiceImpl implements ClassifyService {
         if (validator.isEmpty(key) && validator.isEmpty(parent))
             return new ArrayList<>();
 
-        return classifyDao.query(key, parent).getList();
+        return (validator.isEmpty(parent) ? classifyDao.root(key) : classifyDao.children(parent)).getList();
     }
 
     @Override
@@ -92,5 +92,29 @@ public class ClassifyServiceImpl implements ClassifyService {
             set.add(child.getId());
             children(child.getId());
         });
+    }
+
+    @Override
+    public List<ClassifyModel> find(String key, List<String> names) {
+        List<ClassifyModel> list = new ArrayList<>();
+        find(list, classifyDao.root(key), names, 0);
+
+        return list;
+    }
+
+    protected void find(List<ClassifyModel> list, PageList<ClassifyModel> pl, List<String> names, int index) {
+        if (pl.getList().isEmpty())
+            return;
+
+        String name = names.get(index);
+        for (ClassifyModel classify : pl.getList()) {
+            if (classify.getName().contains(name)) {
+                list.add(classify);
+                if (index < names.size() - 1)
+                    find(list, classifyDao.children(classify.getId()), names, index + 1);
+
+                break;
+            }
+        }
     }
 }

@@ -57,7 +57,7 @@ CREATE TABLE t_milepost_physical
   c_id CHAR(32) NOT NULL COMMENT '主键',
   c_region CHAR(32) NOT NULL COMMENT '区域',
   c_hospital CHAR(32) DEFAULT NULL COMMENT '医院',
-  c_type INT DEFAULT 0 COMMENT '类型',
+  c_type INT DEFAULT 0 COMMENT '类型：0-备孕期；1-孕期；2-婴幼儿期',
   c_sort INT DEFAULT 0 COMMENT '序号',
   c_time VARCHAR(255) DEFAULT NULL COMMENT '时间',
   c_content TEXT DEFAULT NULL COMMENT '内容',

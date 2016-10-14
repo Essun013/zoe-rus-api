@@ -12,7 +12,7 @@ import org.springframework.stereotype.Controller;
  * @author lpw
  */
 @Controller(KnowledgeModel.NAME + ".ctrl")
-@Execute(name = "/kb/knowledge/", code = "21")
+@Execute(name = "/kb/knowledge/",key = KnowledgeModel.NAME, code = "21")
 public class KnowledgeCtrl {
     @Autowired
     protected Request request;

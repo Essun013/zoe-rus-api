@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller;
  * @author lpw
  */
 @Controller(KeyWordModel.NAME + ".ctrl")
-@Execute(name = "/kb/key-word/", code = "22")
+@Execute(name = "/kb/key-word/", key = KeyWordModel.NAME, code = "22")
 public class KeyWordCtrl {
     @Autowired
     protected Request request;

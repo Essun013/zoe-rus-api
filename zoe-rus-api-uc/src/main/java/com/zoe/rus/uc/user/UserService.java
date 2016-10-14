@@ -21,9 +21,10 @@ public interface UserService {
      * @param name     姓名。
      * @param nick     昵称。
      * @param gender   性别。
+     * @param auto     是否自动注册。
      * @return 用户信息。
      */
-    UserModel signUp(String username, String password, String name, String nick, int gender);
+    UserModel signUp(String username, String password, String name, String nick, int gender, boolean auto);
 
     /**
      * 验证用户名密码。

@@ -33,6 +33,26 @@ public class UserCtrl {
     protected UserService userService;
 
     /**
+     * 绑定MacID。
+     * username MacID。
+     * gender 性别：0-未知；1-男；2-女。
+     *
+     * @return {UserModel}。
+     */
+    @Execute(name = "macid", validates = {
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "username", failureCode = 1),
+            @Validate(validator = Validators.MAX_LENGTH, parameter = "username", number = {100}, failureCode = 2),
+            @Validate(validator = AuthService.VALIDATOR_USERNAME_NOT_EXISTS, parameter = "username", failureCode = 21)
+    })
+    public Object macid() {
+        UserModel user = userService.signUp(request.get("username"), null, null, null, request.getAsInt("gender"), true);
+        if (user == null)
+            return templates.get().failure(CODE + 29, message.get(UserModel.NAME + ".sign-up.failure"), null, null);
+
+        return modelHelper.toJson(user);
+    }
+
+    /**
      * 注册。
      * username 用户名。
      * password 密码。
@@ -55,7 +75,7 @@ public class UserCtrl {
             @Validate(validator = AuthService.VALIDATOR_USERNAME_NOT_EXISTS, parameter = "username", failureCode = 21)
     })
     public Object signUp() {
-        UserModel user = userService.signUp(request.get("username"), request.get("password"), request.get("name"), request.get("nick"), request.getAsInt("gender"));
+        UserModel user = userService.signUp(request.get("username"), request.get("password"), request.get("name"), request.get("nick"), request.getAsInt("gender"), false);
         if (user == null)
             return templates.get().failure(CODE + 29, message.get(UserModel.NAME + ".sign-up.failure"), null, null);
 

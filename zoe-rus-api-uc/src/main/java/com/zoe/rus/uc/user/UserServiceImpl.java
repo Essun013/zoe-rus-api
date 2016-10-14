@@ -46,18 +46,20 @@ public class UserServiceImpl implements UserService {
     protected UserDao userDao;
 
     @Override
-    public UserModel signUp(String username, String password, String name, String nick, int gender) {
+    public UserModel signUp(String username, String password, String name, String nick, int gender, boolean auto) {
         UserModel user = get();
         if (user == null)
             user = new UserModel();
         if (gender == 2 && validator.isEmpty(user.getHome()))
             user.setHome(homeService.create());
-        user.setMobile(username);
-        user.setPassword(password(password));
-        if (!validator.isEmpty(name))
-            user.setName(name);
-        if (!validator.isEmpty(nick))
-            user.setNick(nick);
+        if (!auto) {
+            user.setMobile(username);
+            user.setPassword(password(password));
+            if (!validator.isEmpty(name))
+                user.setName(name);
+            if (!validator.isEmpty(nick))
+                user.setNick(nick);
+        }
         user.setGender(gender);
         userDao.save(user);
         if (!authService.create(user.getId(), username, 0)) {

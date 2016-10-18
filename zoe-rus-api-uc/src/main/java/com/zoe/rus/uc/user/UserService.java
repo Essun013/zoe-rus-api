@@ -5,10 +5,6 @@ package com.zoe.rus.uc.user;
  */
 public interface UserService {
     /**
-     * 用户名密码验证器。
-     */
-    String VALIDATOR_AUTH = UserModel.NAME + ".validator.auth";
-    /**
      * 用户是否已登入验证器。
      */
     String VALIDATOR_SIGN_IN = UserModel.NAME + ".validator.sign-in";
@@ -27,13 +23,14 @@ public interface UserService {
     UserModel signUp(String username, String password, String name, String nick, int gender, boolean auto);
 
     /**
-     * 验证用户名密码。
+     * 登入。
      *
      * @param username 用户名。
      * @param password 密码。
-     * @return 如果验证通过则返回true；否则返回false。
+     * @param macId    MacID。
+     * @return 如果验证通过则返回用户信息，否则返回null。
      */
-    boolean auth(String username, String password);
+    UserModel signIn(String username, String password, String macId);
 
     /**
      * 获取当前用户。

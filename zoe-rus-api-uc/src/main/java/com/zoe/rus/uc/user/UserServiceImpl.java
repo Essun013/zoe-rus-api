@@ -74,18 +74,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean auth(String username, String password) {
+    public UserModel signIn(String username, String password, String macId) {
         AuthModel auth = authService.findByUsername(username);
         if (auth == null)
-            return false;
+            return null;
 
         UserModel user = userDao.findById(auth.getUser());
         if (user == null || (auth.getType() == 1 && !user.getPassword().equals(password(password))))
-            return false;
+            return null;
 
+        authService.signIn(macId, user.getId());
         session.set(SESSION, user);
 
-        return true;
+        return user;
     }
 
     @Override

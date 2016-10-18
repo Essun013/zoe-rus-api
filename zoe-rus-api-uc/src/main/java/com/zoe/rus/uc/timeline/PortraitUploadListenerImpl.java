@@ -1,4 +1,4 @@
-package com.zoe.rus.uc.user;
+package com.zoe.rus.uc.timeline;
 
 import com.zoe.commons.ctrl.http.upload.UploadListener;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,14 +7,14 @@ import org.springframework.stereotype.Controller;
 /**
  * @author lpw
  */
-@Controller(UserModel.NAME + ".upload-listener.portrait")
+@Controller(TimelineModel.NAME + ".upload-listener.portrait")
 public class PortraitUploadListenerImpl implements UploadListener {
     @Autowired
-    protected UserService userService;
+    protected TimelineService timelineService;
 
     @Override
     public String getKey() {
-        return "uc.user.portrait";
+        return "uc.timeline.portrait";
     }
 
     @Override
@@ -24,7 +24,7 @@ public class PortraitUploadListenerImpl implements UploadListener {
 
     @Override
     public String upload(String name, String size, String uri) {
-        userService.portrait(uri);
+        timelineService.portrait(uri);
         return uri;
     }
 

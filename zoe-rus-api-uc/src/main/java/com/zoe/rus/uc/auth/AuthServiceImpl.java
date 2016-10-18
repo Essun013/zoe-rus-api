@@ -32,4 +32,14 @@ public class AuthServiceImpl implements AuthService {
 
         return true;
     }
+
+    @Override
+    public void signIn(String macId, String user) {
+        AuthModel auth = findByUsername(macId);
+        if (auth == null || auth.getUser().equals(user))
+            return;
+
+        auth.setUser(user);
+        authDao.save(auth);
+    }
 }

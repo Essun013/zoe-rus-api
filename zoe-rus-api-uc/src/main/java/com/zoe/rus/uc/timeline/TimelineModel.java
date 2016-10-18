@@ -25,6 +25,7 @@ public class TimelineModel extends ModelSupport {
     private String home; // 家庭
     private int sort; // 顺序
     private int type; // 类型：0-孕妈；1-宝宝
+    private String portrait; // 头像
     private Date start; // 开始日期
     private int day; // 天数
     private int end; // 结束：0-进行中；1-已结束
@@ -57,6 +58,16 @@ public class TimelineModel extends ModelSupport {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    @Jsonable
+    @Column(name = "c_portrait")
+    public String getPortrait() {
+        return portrait;
+    }
+
+    public void setPortrait(String portrait) {
+        this.portrait = portrait;
     }
 
     @Jsonable

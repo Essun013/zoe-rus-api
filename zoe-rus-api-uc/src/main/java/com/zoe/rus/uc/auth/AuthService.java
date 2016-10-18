@@ -36,4 +36,6 @@ public interface AuthService {
      * @return 如果创建成功则返回true；否则返回false。
      */
     boolean create(String user, String username, int type);
+
+    void signIn(String macId,String user);
 }

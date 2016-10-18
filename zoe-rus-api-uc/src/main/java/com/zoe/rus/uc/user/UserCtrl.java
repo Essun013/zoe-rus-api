@@ -86,16 +86,20 @@ public class UserCtrl {
      * 登入。
      * username 用户名。
      * password 密码。
+     * macId MacID。
      *
      * @return see UserModel
      */
     @Execute(name = "sign-in", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "username", failureCode = 1),
-            @Validate(validator = Validators.NOT_EMPTY, parameter = "password", failureCode = 3),
-            @Validate(validator = UserService.VALIDATOR_AUTH, parameter = "password", failureCode = 22)
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "password", failureCode = 3)
     })
     public Object signIn() {
-        return sign();
+        UserModel user = userService.signIn(request.get("username"), request.get("password"), request.get("macId"));
+        if (user == null)
+            return templates.get().failure(CODE + 22, message.get(UserModel.NAME + ".auth.failure"), null, null);
+
+        return modelHelper.toJson(user);
     }
 
     /**

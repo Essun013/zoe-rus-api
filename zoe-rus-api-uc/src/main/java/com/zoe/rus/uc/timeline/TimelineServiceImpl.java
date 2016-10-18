@@ -45,6 +45,7 @@ public class TimelineServiceImpl implements TimelineService {
         }
         timelineDao.save(timeline);
         sort(timeline.getHome());
+        physical(timeline);
         session.set(SESSION, timeline);
 
         return true;

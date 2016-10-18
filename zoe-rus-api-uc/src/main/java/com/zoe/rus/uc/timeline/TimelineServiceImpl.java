@@ -67,6 +67,7 @@ public class TimelineServiceImpl implements TimelineService {
         physicalService.queryByRegion("fdc68ed0951a11e6ae750050569065c3").forEach(physical -> array.add(physical.getContent()));
         json.put("physical", array);
         timelineDao.insertPhysical(json);
+
     }
 
     @Override

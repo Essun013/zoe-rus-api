@@ -5,7 +5,6 @@ import com.zoe.commons.dao.orm.PageList;
 import com.zoe.commons.dao.orm.lite.LiteOrm;
 import com.zoe.commons.dao.orm.lite.LiteQuery;
 import net.sf.json.JSONObject;
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -31,6 +30,14 @@ class TimelineDaoImpl implements TimelineDao {
 
     @Override
     public void insertPhysical(JSONObject json) {
-        mongo.getCollection(null, "t_uc_timeline").insertOne(new Document(json));
+        mongo.insert(null, TimelineModel.class, json);
+    }
+
+    @Override
+    public JSONObject getPhysical(String id) {
+        JSONObject where = new JSONObject();
+        where.put("id", id);
+
+        return mongo.findOne(null, TimelineModel.class, where);
     }
 }

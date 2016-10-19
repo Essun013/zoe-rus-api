@@ -16,7 +16,8 @@ import java.util.List;
  */
 @Service(TimelineModel.NAME + ".service")
 public class TimelineServiceImpl implements TimelineService {
-    private static final long LMP = 280L * 24 * 60 * 60 * 1000;
+    private static final long DAY = 24L * 60 * 60 * 1000;
+    private static final long LMP = 280L * DAY;
     private static final String SESSION = TimelineModel.NAME + ".service.session";
 
     @Autowired
@@ -46,7 +47,7 @@ public class TimelineServiceImpl implements TimelineService {
         timelineDao.save(timeline);
         sort(timeline.getHome());
         physical(timeline);
-        session.set(SESSION, timeline);
+        set(timeline, true);
 
         return true;
     }
@@ -62,7 +63,7 @@ public class TimelineServiceImpl implements TimelineService {
 
     protected void physical(TimelineModel timeline) {
         JSONObject json = new JSONObject();
-        json.put("timeline", timeline.getId());
+        json.put("id", timeline.getId());
         JSONArray array = new JSONArray();
         physicalService.queryByRegion("").forEach(physical -> array.add(physical.getContent()));
         json.put("physical", array);
@@ -77,19 +78,29 @@ public class TimelineServiceImpl implements TimelineService {
 
         timeline.setPortrait(portrait);
         timelineDao.save(timeline);
-        session.set(SESSION, timeline);
+        set(timeline, false);
     }
 
     @Override
     public TimelineModel get() {
         TimelineModel timeline = session.get(SESSION);
         if (timeline == null) {
-            List<TimelineModel> list = timelineDao.query(homeService.get().getId(), false).getList();
+            List<TimelineModel> list = timelineDao.query(homeService.get().getId(), true).getList();
             if (list.isEmpty())
                 return null;
 
-            session.set(SESSION, timeline = list.get(list.size() - 1));
+            timeline = set(list.get(list.size() - 1), true);
         }
+
+        return timeline;
+    }
+
+    protected TimelineModel set(TimelineModel timeline, boolean reset) {
+        if (reset) {
+            timeline.setDay((int) ((System.currentTimeMillis() - timeline.getStart().getTime()) / DAY));
+            timelineDao.save(timeline);
+        }
+        session.set(SESSION, timeline);
 
         return timeline;
     }

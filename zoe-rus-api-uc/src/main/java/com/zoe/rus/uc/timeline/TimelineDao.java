@@ -12,4 +12,6 @@ interface TimelineDao {
     PageList<TimelineModel> query(String home, boolean sort);
 
     void insertPhysical(JSONObject json);
+
+    JSONObject getPhysical(String id);
 }

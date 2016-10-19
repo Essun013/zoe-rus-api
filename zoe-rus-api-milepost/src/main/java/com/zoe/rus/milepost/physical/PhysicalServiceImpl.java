@@ -9,7 +9,6 @@ import com.zoe.rus.kb.hospital.HospitalModel;
 import com.zoe.rus.kb.hospital.HospitalService;
 import com.zoe.rus.util.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -35,8 +34,7 @@ public class PhysicalServiceImpl implements PhysicalService {
     protected HospitalService hospitalService;
     @Autowired
     protected PhysicalDao physicalDao;
-    @Value("${rus.milepost.physical.region.china:42051871815346bb9f4da5e1479b3519}")
-    protected String regionChina;
+    protected String regionRoot;
 
     @Override
     public PageList<PhysicalModel> query() {
@@ -64,7 +62,7 @@ public class PhysicalServiceImpl implements PhysicalService {
         Map<Integer, PhysicalModel> map = new HashMap<>();
         queryByRegion(map, region);
         if (map.isEmpty())
-            queryByRegion(regionChina);
+            queryByRegion(getRegionRoot());
 
         return map;
     }
@@ -95,6 +93,16 @@ public class PhysicalServiceImpl implements PhysicalService {
         keys.forEach(key -> list.add(map.get(key)));
 
         return list;
+    }
+
+    protected synchronized String getRegionRoot() {
+        if (regionRoot == null) {
+            List<ClassifyModel> list = classifyService.query("region", null);
+            if (list.size() > 0)
+                regionRoot = list.get(0).getId();
+        }
+
+        return regionRoot;
     }
 
     @Override

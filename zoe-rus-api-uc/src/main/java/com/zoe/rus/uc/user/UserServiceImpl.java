@@ -155,9 +155,4 @@ public class UserServiceImpl implements UserService {
     public void signOut() {
         session.remove(SESSION);
     }
-
-    @Override
-    public UserModel findById(String id) {
-        return userDao.findById(id);
-    }
 }

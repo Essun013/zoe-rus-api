@@ -9,9 +9,14 @@ import com.zoe.rus.kb.hospital.HospitalModel;
 import com.zoe.rus.kb.hospital.HospitalService;
 import com.zoe.rus.util.Pagination;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author lpw
@@ -30,6 +35,8 @@ public class PhysicalServiceImpl implements PhysicalService {
     protected HospitalService hospitalService;
     @Autowired
     protected PhysicalDao physicalDao;
+    @Value("${rus.milepost.physical.region.china:42051871815346bb9f4da5e1479b3519}")
+    protected String regionChina;
 
     @Override
     public PageList<PhysicalModel> query() {
@@ -38,10 +45,7 @@ public class PhysicalServiceImpl implements PhysicalService {
 
     @Override
     public List<PhysicalModel> queryByRegion(String region) {
-        Map<Integer, PhysicalModel> map = new HashMap<>();
-        queryByRegion(map, region);
-
-        return fromMap(map);
+        return fromMap(queryMapByRegion(region));
     }
 
     @Override
@@ -50,11 +54,19 @@ public class PhysicalServiceImpl implements PhysicalService {
         if (hospital == null)
             return new ArrayList<>();
 
-        Map<Integer, PhysicalModel> map = new HashMap<>();
-        queryByRegion(map, hospital.getRegion());
+        Map<Integer, PhysicalModel> map = queryMapByRegion(hospital.getRegion());
         toMap(map, physicalDao.queryByHospital(hospitalId));
 
         return fromMap(map);
+    }
+
+    protected Map<Integer, PhysicalModel> queryMapByRegion(String region) {
+        Map<Integer, PhysicalModel> map = new HashMap<>();
+        queryByRegion(map, region);
+        if (map.isEmpty())
+            queryByRegion(regionChina);
+
+        return map;
     }
 
     protected void queryByRegion(Map<Integer, PhysicalModel> map, String region) {
@@ -70,7 +82,7 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     protected void toMap(Map<Integer, PhysicalModel> map, PageList<PhysicalModel> pl) {
-        pl.getList().forEach(physical -> map.put(physical.getType() * 100 + physical.getSort(), physical));
+        pl.getList().forEach(physical -> map.put(physical.getType() * 10000 + physical.getSort(), physical));
     }
 
     protected List<PhysicalModel> fromMap(Map<Integer, PhysicalModel> map) {

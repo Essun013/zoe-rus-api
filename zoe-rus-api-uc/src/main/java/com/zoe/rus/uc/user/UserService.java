@@ -68,6 +68,4 @@ public interface UserService {
      * 退出登入。
      */
     void signOut();
-
-    UserModel findById(String id);
 }

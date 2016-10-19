@@ -64,9 +64,8 @@ public class TimelineServiceImpl implements TimelineService {
         JSONObject json = new JSONObject();
         json.put("timeline", timeline.getId());
         JSONArray array = new JSONArray();
-        physicalService.queryByRegion("fdc68ed0951a11e6ae750050569065c3").forEach(physical -> array.add(physical.getContent() == null ? "{}" : physical.getContent()));
+        physicalService.queryByRegion("").forEach(physical -> array.add(physical.getContent()));
         json.put("physical", array);
-        System.out.println("#####################################\n"+json.toString(2));
         timelineDao.insertPhysical(json);
     }
 

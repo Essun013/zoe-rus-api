@@ -58,7 +58,7 @@ public class TimelineCtrl {
     /**
      * 获取产检信息。
      *
-     * @return
+     * @return {}。
      */
     @Execute(name = "physical")
     public Object physical() {

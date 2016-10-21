@@ -112,7 +112,7 @@ public class TimelineServiceImpl implements TimelineService {
             timelineDao.save(timeline);
         }
         session.set(SESSION_TIMELINE, timeline);
-        session.set(SESSION_PHYSICAL, timelineDao.getPhysical(timeline.getId()));
+        setPhysical(timeline);
 
         return timeline;
     }
@@ -121,8 +121,24 @@ public class TimelineServiceImpl implements TimelineService {
     public JSONObject getPhysical() {
         JSONObject physical = session.get(SESSION_PHYSICAL);
         if (physical == null)
-            session.set(SESSION_PHYSICAL, physical = timelineDao.getPhysical(get().getId()));
+            physical = setPhysical(get());
 
         return physical;
+    }
+
+    protected JSONObject setPhysical(TimelineModel timeline) {
+        JSONArray array = timelineDao.getPhysical(timeline.getId()).getJSONArray("physical");
+        for (int i = 0, size = array.size(); i < size; i++) {
+            JSONObject object = array.getJSONObject(i);
+            JSONArray dayRange = object.getJSONArray("dayRange");
+            int[] ns = new int[]{dayRange.getInt(0), dayRange.getInt(1)};
+            if (i == size - 1 || (timeline.getDay() >= ns[0] && timeline.getDay() <= ns[1])) {
+                session.set(SESSION_PHYSICAL, object);
+
+                return object;
+            }
+        }
+
+        return new JSONObject();
     }
 }

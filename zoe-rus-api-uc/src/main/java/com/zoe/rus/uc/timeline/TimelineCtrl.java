@@ -8,7 +8,6 @@ import com.zoe.commons.ctrl.validate.Validators;
 import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.commons.util.Message;
 import com.zoe.rus.uc.user.UserService;
-import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -49,14 +48,20 @@ public class TimelineCtrl {
     /**
      * 获取时间轴信息。
      *
-     * @return {timeline:{},physical:{}}。
+     * @return {TimelineModel}。
      */
     @Execute(name = "get")
     public Object get() {
-        JSONObject object = new JSONObject();
-        object.put("timeline", modelHelper.toJson(timelineService.get()));
-        object.put("physical", timelineService.getPhysical());
+        return modelHelper.toJson(timelineService.get());
+    }
 
-        return object;
+    /**
+     * 获取产检信息。
+     *
+     * @return
+     */
+    @Execute(name = "physical")
+    public Object physical() {
+        return timelineService.getPhysical();
     }
 }

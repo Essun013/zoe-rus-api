@@ -1,8 +1,10 @@
 package com.zoe.rus.uc.timeline;
 
 import com.zoe.commons.ctrl.context.Session;
+import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.rus.milepost.physical.PhysicalService;
 import com.zoe.rus.uc.home.HomeService;
+import com.zoe.rus.util.DateTime;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +23,11 @@ public class TimelineServiceImpl implements TimelineService {
     private static final String SESSION = TimelineModel.NAME + ".service.session";
 
     @Autowired
+    protected ModelHelper modelHelper;
+    @Autowired
     protected Session session;
+    @Autowired
+    protected DateTime dateTime;
     @Autowired
     protected PhysicalService physicalService;
     @Autowired
@@ -65,7 +71,11 @@ public class TimelineServiceImpl implements TimelineService {
         JSONObject json = new JSONObject();
         json.put("id", timeline.getId());
         JSONArray array = new JSONArray();
-        physicalService.queryByRegion("").forEach(physical -> array.add(physical.getContent()));
+        physicalService.queryByRegion("").forEach(physical -> {
+            JSONObject object = modelHelper.toJson(physical);
+            object.put("dayRange", dateTime.range(physical.getTime()));
+            array.add(object);
+        });
         json.put("physical", array);
         timelineDao.insertPhysical(json);
     }

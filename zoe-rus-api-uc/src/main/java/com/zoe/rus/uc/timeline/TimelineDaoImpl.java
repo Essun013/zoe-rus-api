@@ -30,7 +30,7 @@ class TimelineDaoImpl implements TimelineDao {
 
     @Override
     public void insertPhysical(JSONObject json) {
-        mongo.insert(null, TimelineModel.class, json);
+        mongo.insert(TimelineModel.class, json);
     }
 
     @Override
@@ -38,6 +38,6 @@ class TimelineDaoImpl implements TimelineDao {
         JSONObject where = new JSONObject();
         where.put("id", id);
 
-        return mongo.findOne(null, TimelineModel.class, where);
+        return mongo.findOne(TimelineModel.class, where);
     }
 }

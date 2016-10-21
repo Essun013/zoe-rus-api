@@ -1,5 +1,7 @@
 package com.zoe.rus.uc.timeline;
 
+import net.sf.json.JSONObject;
+
 import java.util.Date;
 
 /**
@@ -11,4 +13,6 @@ public interface TimelineService {
     void portrait(String portrait);
 
     TimelineModel get();
+
+    JSONObject getPhysical();
 }

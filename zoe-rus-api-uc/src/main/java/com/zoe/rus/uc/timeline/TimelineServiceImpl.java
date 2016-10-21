@@ -20,7 +20,8 @@ import java.util.List;
 public class TimelineServiceImpl implements TimelineService {
     private static final long DAY = 24L * 60 * 60 * 1000;
     private static final long LMP = 280L * DAY;
-    private static final String SESSION = TimelineModel.NAME + ".service.session";
+    private static final String SESSION_TIMELINE = TimelineModel.NAME + ".service.session.timeline";
+    private static final String SESSION_PHYSICAL = TimelineModel.NAME + ".service.session.physical";
 
     @Autowired
     protected ModelHelper modelHelper;
@@ -93,7 +94,7 @@ public class TimelineServiceImpl implements TimelineService {
 
     @Override
     public TimelineModel get() {
-        TimelineModel timeline = session.get(SESSION);
+        TimelineModel timeline = session.get(SESSION_TIMELINE);
         if (timeline == null) {
             List<TimelineModel> list = timelineDao.query(homeService.get().getId(), true).getList();
             if (list.isEmpty())
@@ -110,8 +111,18 @@ public class TimelineServiceImpl implements TimelineService {
             timeline.setDay((int) ((System.currentTimeMillis() - timeline.getStart().getTime()) / DAY));
             timelineDao.save(timeline);
         }
-        session.set(SESSION, timeline);
+        session.set(SESSION_TIMELINE, timeline);
+        session.set(SESSION_PHYSICAL, timelineDao.getPhysical(timeline.getId()));
 
         return timeline;
+    }
+
+    @Override
+    public JSONObject getPhysical() {
+        JSONObject physical = session.get(SESSION_PHYSICAL);
+        if (physical == null)
+            session.set(SESSION_PHYSICAL, physical = timelineDao.getPhysical(get().getId()));
+
+        return physical;
     }
 }

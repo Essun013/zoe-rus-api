@@ -133,6 +133,7 @@ CREATE TABLE t_uc_timeline
   c_home CHAR(32) NOT NULL COMMENT '家庭',
   c_sort INT DEFAULT 0 COMMENT '顺序',
   c_type INT DEFAULT 0 COMMENT '类型：0-孕妈；1-宝宝',
+  c_name VARCHAR(255) DEFAULT NULL COMMENT '名称',
   c_portrait VARCHAR(255) DEFAULT NULL COMMENT '头像',
   c_start DATE NOT NULL COMMENT '开始日期',
   c_day INT DEFAULT 0 COMMENT '天数',

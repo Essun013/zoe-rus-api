@@ -106,6 +106,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected JSONObject toJson(KnowledgeModel knowledge) {
         JSONObject object = new JSONObject();
         object.put("subject", knowledge.getSubject());
+        if (!validator.isEmpty(knowledge.getImage()))
+            object.put("image", knowledge.getImage());
+        if (!validator.isEmpty(knowledge.getThumbnail()))
+            object.put("thumbnail", knowledge.getThumbnail());
         object.put("summary", knowledge.getSummary());
         object.put("html", knowledge.getHtml());
 
@@ -217,7 +221,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         Set<String> kws = new HashSet<>();
         List<String> mps = new ArrayList<>();
         StringBuilder sm = new StringBuilder();
-        knowledge.setHtml(toHtml(kws, mps, sm, path(classify.getId()) + "/" + name + "/", knowledge.getContent()));
+        String path = KnowledgeService.PATH + path(classify.getId()) + "/" + name + "/";
+        if (new File(context.getAbsolutePath(path + "image.png")).exists())
+            knowledge.setImage(path + "image.png");
+        if (new File(context.getAbsolutePath(path + "thumbnail.png")).exists())
+            knowledge.setThumbnail(path + "thumbnail.png");
+        knowledge.setHtml(toHtml(kws, mps, sm, path, knowledge.getContent()));
         knowledge.setSummary(sm.toString());
         knowledgeDao.save(knowledge);
         this.kws.put(knowledge.getId(), kws);

@@ -57,7 +57,7 @@ class KnowledgeVisitor extends AbstractVisitor {
 
     @Override
     public void visit(Image image) {
-        image.setDestination(KnowledgeService.PATH + path + image.getDestination());
+        image.setDestination(path + image.getDestination());
         visitChildren(image);
     }
 }

@@ -23,6 +23,8 @@ public class KnowledgeModel extends ModelSupport {
     private String classify; // 分类
     private int sort; // 顺序
     private String subject; // 标题
+    private String image; // 主图
+    private String thumbnail; // 缩略图
     private String summary; // 摘要
     private String content; // 内容
     private String html; // HTML内容
@@ -55,6 +57,26 @@ public class KnowledgeModel extends ModelSupport {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    @Jsonable
+    @Column(name = "c_image")
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @Jsonable
+    @Column(name = "c_thumbnail")
+    public String getThumbnail() {
+        return thumbnail;
+    }
+
+    public void setThumbnail(String thumbnail) {
+        this.thumbnail = thumbnail;
     }
 
     @Jsonable

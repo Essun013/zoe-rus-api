@@ -35,6 +35,8 @@ CREATE TABLE t_kb_knowledge
   c_classify CHAR(32) NOT NULL COMMENT '分类',
   c_sort INT DEFAULT 0 COMMENT '顺序',
   c_subject VARCHAR(255) DEFAULT NULL COMMENT '标题',
+  c_image VARCHAR(255) DEFAULT NULL COMMENT '主图',
+  c_thumbnail VARCHAR(255) DEFAULT NULL COMMENT '缩略图',
   c_summary TEXT DEFAULT NULL COMMENT '摘要',
   c_content TEXT DEFAULT NULL COMMENT '内容',
   c_html TEXT DEFAULT NULL COMMENT 'HTML内容',

@@ -21,24 +21,18 @@ public class KnowledgeCtrl {
     @Autowired
     protected KnowledgeService knowledgeService;
 
-    @Execute(name = "get", type = Templates.STRING, validates = {
+    @Execute(name = "get", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
     })
     public Object get() {
-        templates.get(Templates.STRING).setContentType("text/html");
-        String html = knowledgeService.get(request.get("id"));
-
-        return html == null ? "" : html;
+        return knowledgeService.get(request.get("id"));
     }
 
-    @Execute(name = "find", type = Templates.STRING, validates = {
+    @Execute(name = "find", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "subject", failureCode = 2)
     })
     public Object find() {
-        templates.get(Templates.STRING).setContentType("text/html");
-        String html = knowledgeService.find(request.get("subject"));
-
-        return html == null ? "" : html;
+        return knowledgeService.find(request.get("subject"));
     }
 
     @Execute(name = "reload")

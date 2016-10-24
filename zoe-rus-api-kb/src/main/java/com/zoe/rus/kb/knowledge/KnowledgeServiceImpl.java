@@ -70,25 +70,25 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected Map<String, Set<String>> kws;
 
     @Override
-    public String get(String id) {
+    public JSONObject get(String id) {
         String key = CACHE_HTML + id;
-        String html = cache.get(key);
-        if (html == null) {
+        JSONObject object = cache.get(key);
+        if (object == null) {
             KnowledgeModel knowledge = knowledgeDao.findById(id);
             if (knowledge == null)
                 return null;
 
-            cache.put(key, html = knowledge.getHtml(), false);
+            cache.put(key, object = toJson(knowledge), false);
         }
 
-        return html;
+        return object;
     }
 
     @Override
-    public String find(String subject) {
+    public JSONObject find(String subject) {
         String key = CACHE_HTML + cacheHtmlKey + subject;
-        String html = cache.get(key);
-        if (html == null) {
+        JSONObject object = cache.get(key);
+        if (object == null) {
             ClassifyModel classify = classifyService.find(CLASSIFY_KEY, 0);
             if (classify == null)
                 return null;
@@ -97,10 +97,19 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             if (knowledge == null)
                 return null;
 
-            cache.put(key, html = knowledge.getHtml(), false);
+            cache.put(key, object = toJson(knowledge), false);
         }
 
-        return html;
+        return object;
+    }
+
+    protected JSONObject toJson(KnowledgeModel knowledge) {
+        JSONObject object = new JSONObject();
+        object.put("subject", knowledge.getSubject());
+        object.put("summary", knowledge.getSummary());
+        object.put("html", knowledge.getHtml());
+
+        return object;
     }
 
     @Override

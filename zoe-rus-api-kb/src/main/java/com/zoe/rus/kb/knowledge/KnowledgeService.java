@@ -1,14 +1,16 @@
 package com.zoe.rus.kb.knowledge;
 
+import net.sf.json.JSONObject;
+
 /**
  * @author lpw
  */
 public interface KnowledgeService {
     String PATH = "/kb";
 
-    String get(String id);
+    JSONObject get(String id);
 
-    String find(String subject);
+    JSONObject find(String subject);
 
     void reload();
 }

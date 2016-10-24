@@ -70,7 +70,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected Map<String, Set<String>> kws;
 
     @Override
-    public JSONObject get(String id) {
+    public JSONObject get(String id, boolean html) {
         String key = CACHE_HTML + id;
         JSONObject object = cache.get(key);
         if (object == null) {
@@ -78,14 +78,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             if (knowledge == null)
                 return null;
 
-            cache.put(key, object = toJson(knowledge), false);
+            cache.put(key, object = toJson(knowledge, html), false);
         }
 
         return object;
     }
 
     @Override
-    public JSONObject find(String subject) {
+    public JSONObject find(String subject, boolean html) {
         String key = CACHE_HTML + cacheHtmlKey + subject;
         JSONObject object = cache.get(key);
         if (object == null) {
@@ -97,13 +97,13 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             if (knowledge == null)
                 return null;
 
-            cache.put(key, object = toJson(knowledge), false);
+            cache.put(key, object = toJson(knowledge, html), false);
         }
 
         return object;
     }
 
-    protected JSONObject toJson(KnowledgeModel knowledge) {
+    protected JSONObject toJson(KnowledgeModel knowledge, boolean html) {
         JSONObject object = new JSONObject();
         object.put("subject", knowledge.getSubject());
         if (!validator.isEmpty(knowledge.getImage()))
@@ -112,7 +112,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             object.put("thumbnail", knowledge.getThumbnail());
         object.put("summary", knowledge.getSummary());
         object.put("label", knowledge.getLabel());
-        object.put("html", knowledge.getHtml());
+        if (html)
+            object.put("html", knowledge.getHtml());
 
         return object;
     }

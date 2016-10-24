@@ -22,22 +22,40 @@ public class KnowledgeCtrl {
     @Autowired
     protected KnowledgeService knowledgeService;
 
+    /**
+     * 获取知识。
+     * id 知识ID值。
+     * html 是否包含html数据，true为包含，其他为不包含。
+     *
+     * @return
+     */
     @Execute(name = "get", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
     })
     public Object get() {
-        JSONObject knowledge = knowledgeService.get(request.get("id"));
+        JSONObject knowledge = knowledgeService.get(request.get("id"), hasHtml());
 
         return knowledge == null ? new JSONObject() : knowledge;
     }
 
+    /**
+     * 获取知识。
+     * subject 知识标题。
+     * html 是否包含html数据，true为包含，其他为不包含。
+     *
+     * @return
+     */
     @Execute(name = "find", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "subject", failureCode = 2)
     })
     public Object find() {
-        JSONObject knowledge = knowledgeService.find(request.get("subject"));
+        JSONObject knowledge = knowledgeService.find(request.get("subject"), hasHtml());
 
         return knowledge == null ? new JSONObject() : knowledge;
+    }
+
+    protected boolean hasHtml() {
+        return "true".equals(request.get("html"));
     }
 
     @Execute(name = "reload")

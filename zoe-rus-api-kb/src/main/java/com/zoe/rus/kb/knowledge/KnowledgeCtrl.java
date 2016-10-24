@@ -27,7 +27,7 @@ public class KnowledgeCtrl {
      * id 知识ID值。
      * html 是否包含html数据，true为包含，其他为不包含。
      *
-     * @return
+     * @return {KnowledgeModel}。
      */
     @Execute(name = "get", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
@@ -43,7 +43,7 @@ public class KnowledgeCtrl {
      * subject 知识标题。
      * html 是否包含html数据，true为包含，其他为不包含。
      *
-     * @return
+     * @return {KnowledgeModel}。
      */
     @Execute(name = "find", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "subject", failureCode = 2)

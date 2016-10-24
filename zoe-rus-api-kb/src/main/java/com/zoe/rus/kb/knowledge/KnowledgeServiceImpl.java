@@ -1,6 +1,7 @@
 package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.cache.Cache;
+import com.zoe.commons.ctrl.context.Request;
 import com.zoe.commons.util.Context;
 import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Generator;
@@ -57,11 +58,15 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Autowired
     protected Logger logger;
     @Autowired
+    protected Request request;
+    @Autowired
     protected ClassifyService classifyService;
     @Autowired
     protected KeyWordService keyWordService;
     @Autowired
     protected KnowledgeDao knowledgeDao;
+    @Value("${" + KnowledgeModel.NAME + ".url:}")
+    protected String url;
     @Value("${" + KnowledgeModel.NAME + ".solr:}")
     protected String solr;
     protected String md4solr;
@@ -120,6 +125,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public void reload() {
+        if (validator.isEmpty(url))
+            url = request.getUrl().replaceAll(request.getUri(), "");
+
         clean();
         JSONObject json = new JSONObject();
         scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
@@ -226,10 +234,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         StringBuilder lb = new StringBuilder();
         String path = KnowledgeService.PATH + path(classify.getId()) + "/" + name + "/";
         if (new File(context.getAbsolutePath(path + "image.png")).exists())
-            knowledge.setImage(path + "image.png");
+            knowledge.setImage(url + path + "image.png");
         if (new File(context.getAbsolutePath(path + "thumbnail.png")).exists())
-            knowledge.setThumbnail(path + "thumbnail.png");
-        knowledge.setHtml(toHtml(kws, mps, sm, lb, path, knowledge.getContent()));
+            knowledge.setThumbnail(url + path + "thumbnail.png");
+        knowledge.setHtml(toHtml(kws, mps, sm, lb, url + path, knowledge.getContent()));
         knowledge.setSummary(sm.toString());
         knowledge.setLabel(lb.toString());
         knowledgeDao.save(knowledge);

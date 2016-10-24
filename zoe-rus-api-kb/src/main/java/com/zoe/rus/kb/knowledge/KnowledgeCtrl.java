@@ -5,6 +5,7 @@ import com.zoe.commons.ctrl.execute.Execute;
 import com.zoe.commons.ctrl.template.Templates;
 import com.zoe.commons.ctrl.validate.Validate;
 import com.zoe.commons.ctrl.validate.Validators;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -25,14 +26,18 @@ public class KnowledgeCtrl {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
     })
     public Object get() {
-        return knowledgeService.get(request.get("id"));
+        JSONObject knowledge = knowledgeService.get(request.get("id"));
+
+        return knowledge == null ? new JSONObject() : knowledge;
     }
 
     @Execute(name = "find", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "subject", failureCode = 2)
     })
     public Object find() {
-        return knowledgeService.find(request.get("subject"));
+        JSONObject knowledge = knowledgeService.find(request.get("subject"));
+
+        return knowledge == null ? new JSONObject() : knowledge;
     }
 
     @Execute(name = "reload")

@@ -26,6 +26,7 @@ public class KnowledgeModel extends ModelSupport {
     private String image; // 主图
     private String thumbnail; // 缩略图
     private String summary; // 摘要
+    private String label; // 标签
     private String content; // 内容
     private String html; // HTML内容
 
@@ -87,6 +88,16 @@ public class KnowledgeModel extends ModelSupport {
 
     public void setSummary(String summary) {
         this.summary = summary;
+    }
+
+    @Jsonable
+    @Column(name = "c_label")
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     @Jsonable

@@ -111,6 +111,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         if (!validator.isEmpty(knowledge.getThumbnail()))
             object.put("thumbnail", knowledge.getThumbnail());
         object.put("summary", knowledge.getSummary());
+        object.put("label", knowledge.getLabel());
         object.put("html", knowledge.getHtml());
 
         return object;
@@ -221,13 +222,15 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         Set<String> kws = new HashSet<>();
         List<String> mps = new ArrayList<>();
         StringBuilder sm = new StringBuilder();
+        StringBuilder lb = new StringBuilder();
         String path = KnowledgeService.PATH + path(classify.getId()) + "/" + name + "/";
         if (new File(context.getAbsolutePath(path + "image.png")).exists())
             knowledge.setImage(path + "image.png");
         if (new File(context.getAbsolutePath(path + "thumbnail.png")).exists())
             knowledge.setThumbnail(path + "thumbnail.png");
-        knowledge.setHtml(toHtml(kws, mps, sm, path, knowledge.getContent()));
+        knowledge.setHtml(toHtml(kws, mps, sm, lb, path, knowledge.getContent()));
         knowledge.setSummary(sm.toString());
+        knowledge.setLabel(lb.toString());
         knowledgeDao.save(knowledge);
         this.kws.put(knowledge.getId(), kws);
         io.copy(md, md4solr + knowledge.getId() + ".md");
@@ -274,10 +277,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
     }
 
-    protected String toHtml(Set<String> kws, List<String> mps, StringBuilder sm, String path, String md) {
+    protected String toHtml(Set<String> kws, List<String> mps, StringBuilder sm, StringBuilder lb, String path, String md) {
         Parser parser = Parser.builder().build();
         Node node = parser.parse(md);
-        node.accept(new KnowledgeVisitor(kws, mps, sm, path));
+        node.accept(new KnowledgeVisitor(kws, mps, sm, lb, path));
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_P, "").replaceAll(">\\s+", ">");

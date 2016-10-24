@@ -38,6 +38,7 @@ CREATE TABLE t_kb_knowledge
   c_image VARCHAR(255) DEFAULT NULL COMMENT '主图',
   c_thumbnail VARCHAR(255) DEFAULT NULL COMMENT '缩略图',
   c_summary TEXT DEFAULT NULL COMMENT '摘要',
+  c_label TEXT DEFAULT NULL COMMENT '标签',
   c_content TEXT DEFAULT NULL COMMENT '内容',
   c_html TEXT DEFAULT NULL COMMENT 'HTML内容',
 

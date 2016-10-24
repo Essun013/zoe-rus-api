@@ -71,7 +71,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject get(String id, boolean html) {
-        String key = CACHE_HTML + id;
+        String key = CACHE_HTML + html + id;
         JSONObject object = cache.get(key);
         if (object == null) {
             KnowledgeModel knowledge = knowledgeDao.findById(id);
@@ -86,7 +86,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject find(String subject, boolean html) {
-        String key = CACHE_HTML + cacheHtmlKey + subject;
+        String key = CACHE_HTML + cacheHtmlKey + html + subject;
         JSONObject object = cache.get(key);
         if (object == null) {
             ClassifyModel classify = classifyService.find(CLASSIFY_KEY, 0);

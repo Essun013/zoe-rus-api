@@ -9,4 +9,6 @@ interface KnowledgeDao {
     void save(KnowledgeModel knowledge);
 
     KnowledgeModel findById(String id);
+
+    KnowledgeModel findBySubject(String classify, String subject);
 }

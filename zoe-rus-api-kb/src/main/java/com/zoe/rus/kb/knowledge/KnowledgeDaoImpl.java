@@ -27,4 +27,9 @@ class KnowledgeDaoImpl implements KnowledgeDao {
     public KnowledgeModel findById(String id) {
         return liteOrm.findById(KnowledgeModel.class, id);
     }
+
+    @Override
+    public KnowledgeModel findBySubject(String classify, String subject) {
+        return liteOrm.findOne(new LiteQuery(KnowledgeModel.class).where("c_classify=? and c_subject=?"), new Object[]{classify, subject});
+    }
 }

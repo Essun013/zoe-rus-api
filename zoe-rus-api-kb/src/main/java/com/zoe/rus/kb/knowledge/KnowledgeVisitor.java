@@ -16,11 +16,13 @@ class KnowledgeVisitor extends AbstractVisitor {
 
     private Set<String> kws;
     private List<String> mps;
+    private StringBuilder sm;
     private String path;
 
-    KnowledgeVisitor(Set<String> kws, List<String> mps, String path) {
+    KnowledgeVisitor(Set<String> kws, List<String> mps, StringBuilder sm, String path) {
         this.kws = kws;
         this.mps = mps;
+        this.sm = sm;
         this.path = path;
     }
 
@@ -28,14 +30,23 @@ class KnowledgeVisitor extends AbstractVisitor {
     public void visit(Text text) {
         String literal = text.getLiteral().trim();
         if (literal.startsWith("@KW ")) {
-            String[] array = literal.split(" ");
-            for (int i = 1; i < array.length; i++)
-                kws.add(array[i]);
+            for (String kw : literal.split(" "))
+                kws.add(kw);
             text.setLiteral(EMPTY);
 
             return;
         }
+
         if (literal.startsWith("@MP ")) {
+            for (String mp : literal.split("-"))
+                mps.add(mp);
+            text.setLiteral(EMPTY);
+
+            return;
+        }
+
+        if (literal.startsWith("@SM ")) {
+            sm.append(literal.substring(4));
             text.setLiteral(EMPTY);
 
             return;

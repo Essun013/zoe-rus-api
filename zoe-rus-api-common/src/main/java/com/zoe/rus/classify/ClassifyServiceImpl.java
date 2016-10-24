@@ -95,6 +95,15 @@ public class ClassifyServiceImpl implements ClassifyService {
     }
 
     @Override
+    public ClassifyModel find(String key, int sort) {
+        for (ClassifyModel classify : classifyDao.root(key).getList())
+            if (classify.getSort() == sort)
+                return classify;
+
+        return null;
+    }
+
+    @Override
     public List<ClassifyModel> find(String key, List<String> names) {
         List<ClassifyModel> list = new ArrayList<>();
         find(list, classifyDao.root(key), names, 0);

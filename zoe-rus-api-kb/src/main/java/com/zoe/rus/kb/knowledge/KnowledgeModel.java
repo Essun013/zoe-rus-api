@@ -20,11 +20,12 @@ import javax.persistence.Table;
 public class KnowledgeModel extends ModelSupport {
     static final String NAME = "rus.kb.knowledge";
 
-    private String classify;
-    private int sort;
-    private String subject;
-    private String content;
-    private String html;
+    private String classify; // 分类
+    private int sort; // 顺序
+    private String subject; // 标题
+    private String summary; // 摘要
+    private String content; // 内容
+    private String html; // HTML内容
 
     @Jsonable
     @Column(name = "c_classify")
@@ -54,6 +55,16 @@ public class KnowledgeModel extends ModelSupport {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    @Jsonable
+    @Column(name = "c_summary")
+    public String getSummary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
     @Jsonable

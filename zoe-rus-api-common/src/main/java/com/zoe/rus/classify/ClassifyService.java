@@ -23,5 +23,7 @@ public interface ClassifyService {
 
     Set<String> children(String id);
 
+    ClassifyModel find(String key, int sort);
+
     List<ClassifyModel> find(String key, List<String> names);
 }

@@ -1,7 +1,13 @@
 package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.cache.Cache;
-import com.zoe.commons.util.*;
+import com.zoe.commons.util.Context;
+import com.zoe.commons.util.Converter;
+import com.zoe.commons.util.Generator;
+import com.zoe.commons.util.Io;
+import com.zoe.commons.util.Json;
+import com.zoe.commons.util.Logger;
+import com.zoe.commons.util.Validator;
 import com.zoe.rus.classify.ClassifyModel;
 import com.zoe.rus.classify.ClassifyService;
 import com.zoe.rus.kb.keyword.KeyWordService;
@@ -10,19 +16,29 @@ import org.commonmark.html.HtmlRenderer;
 import org.commonmark.node.Node;
 import org.commonmark.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author lpw
  */
 @Service(KnowledgeModel.NAME + ".service")
 public class KnowledgeServiceImpl implements KnowledgeService {
-    private static final String CLASSIFY_KEY = KnowledgeModel.NAME + ".classify";
+    private static final String CLASSIFY_KEY = "kb.knowledge.classify";
     private static final String CACHE_HTML = KnowledgeModel.NAME + ".service.html:";
+    private static final Pattern SORT_NAME = Pattern.compile("^\\d+");
 
     @Autowired
     protected Cache cache;
@@ -32,6 +48,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected Converter converter;
     @Autowired
     protected Validator validator;
+    @Autowired
+    protected Generator generator;
     @Autowired
     protected Json json;
     @Autowired
@@ -44,7 +62,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected KeyWordService keyWordService;
     @Autowired
     protected KnowledgeDao knowledgeDao;
+    @Value("${" + KnowledgeModel.NAME + ".solr:}")
+    protected String solr;
     protected String md4solr;
+    protected String cacheHtmlKey = "";
     protected Map<String, String> path;
     protected Map<String, Set<String>> kws;
 
@@ -64,14 +85,37 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
+    public String find(String subject) {
+        String key = CACHE_HTML + cacheHtmlKey + subject;
+        String html = cache.get(key);
+        if (html == null) {
+            ClassifyModel classify = classifyService.find(CLASSIFY_KEY, 0);
+            if (classify == null)
+                return null;
+
+            KnowledgeModel knowledge = knowledgeDao.findBySubject(classify.getId(), subject);
+            if (knowledge == null)
+                return null;
+
+            cache.put(key, html = knowledge.getHtml(), false);
+        }
+
+        return html;
+    }
+
+    @Override
     public void reload() {
         clean();
         JSONObject json = new JSONObject();
         scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
         keyWordService.save(kws);
+        cacheHtmlKey = generator.random(32);
+
+        if (validator.isEmpty(solr))
+            return;
+
         try {
-            Runtime.getRuntime().exec("sh " + context.getAbsolutePath("/WEB-INF/solr.sh")
-                    + " /home/lpw/soft/solr-6.2.0 " + md4solr);
+            Runtime.getRuntime().exec("sh " + context.getAbsolutePath("/WEB-INF/solr.sh") + " " + solr + " " + md4solr);
         } catch (IOException e) {
             logger.warn(e, "执行solr脚本时发生异常！");
         }
@@ -100,22 +144,36 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     protected void scan(JSONObject pjson, JSONObject json, ClassifyModel parent, ClassifyModel classify, File file) {
         String name = file.getName();
-        if (!file.isDirectory() || (parent != null && !validator.isMatchRegex("^[0-9]{2}.+", name)))
+        String[] sortName = getSortName(name);
+        if (!file.isDirectory() || (parent != null && sortName == null))
             return;
 
+        if (sortName == null)
+            sortName = new String[]{"0", name};
+        int sort = converter.toInt(sortName[0]);
         if (name.endsWith(".md"))
-            knowledge(pjson, parent, file, name);
+            knowledge(pjson, parent, file, sort, sortName[1], name);
         else
-            classify(json, parent, classify, file, name);
+            classify(json, parent, classify, file, sort, sortName[1]);
         if (pjson != null && !json.isEmpty())
             this.json.addAsArray(pjson, "children", json);
     }
 
-    protected void classify(JSONObject json, ClassifyModel parent, ClassifyModel classify, File file, String name) {
+    protected String[] getSortName(String string) {
+        Matcher matcher = SORT_NAME.matcher(string);
+        if (!matcher.find())
+            return null;
+
+        String sort = matcher.group();
+
+        return new String[]{sort, string.substring(sort.length())};
+    }
+
+    protected void classify(JSONObject json, ClassifyModel parent, ClassifyModel classify, File file, int sort, String name) {
         if (parent != null) {
             classify.setKey(CLASSIFY_KEY);
-            classify.setSort(converter.toInt(name.substring(0, 2)));
-            classify.setName(name.substring(2));
+            classify.setSort(sort);
+            classify.setName(name);
             classifyService.save(classify);
             if (parent.getChildren() == null)
                 parent.setChildren(new ArrayList<>());
@@ -137,19 +195,21 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
     }
 
-    protected void knowledge(JSONObject json, ClassifyModel classify, File file, String name) {
+    protected void knowledge(JSONObject json, ClassifyModel classify, File file, int sort, String subject, String name) {
         String md = getMdFile(file);
         if (md == null)
             return;
 
         KnowledgeModel knowledge = new KnowledgeModel();
         knowledge.setClassify(classify.getId());
-        knowledge.setSort(converter.toInt(name.substring(0, 2)));
-        knowledge.setSubject(name.substring(2, name.length() - 3));
+        knowledge.setSort(sort);
+        knowledge.setSubject(subject.substring(0, subject.length() - 3));
         knowledge.setContent(new String(io.read(md)));
         Set<String> kws = new HashSet<>();
         List<String> mps = new ArrayList<>();
-        knowledge.setHtml(toHtml(kws, mps, path(classify.getId()) + "/" + name + "/", knowledge.getContent()));
+        StringBuilder sm = new StringBuilder();
+        knowledge.setHtml(toHtml(kws, mps, sm, path(classify.getId()) + "/" + name + "/", knowledge.getContent()));
+        knowledge.setSummary(sm.toString());
         knowledgeDao.save(knowledge);
         this.kws.put(knowledge.getId(), kws);
         io.copy(md, md4solr + knowledge.getId() + ".md");
@@ -196,12 +256,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
     }
 
-    protected String toHtml(Set<String> kws, List<String> mps, String path, String md) {
+    protected String toHtml(Set<String> kws, List<String> mps, StringBuilder sm, String path, String md) {
         Parser parser = Parser.builder().build();
         Node node = parser.parse(md);
-        node.accept(new KnowledgeVisitor(kws, mps, path));
+        node.accept(new KnowledgeVisitor(kws, mps, sm, path));
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
-        return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_P, "").replaceAll(">\\s+",">");
+        return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_P, "").replaceAll(">\\s+", ">");
     }
 }

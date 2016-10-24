@@ -32,9 +32,10 @@ DROP TABLE IF EXISTS t_kb_knowledge;
 CREATE TABLE t_kb_knowledge
 (
   c_id CHAR(32) NOT NULL COMMENT '主键',
-  c_classify CHAR(32) DEFAULT NULL COMMENT '分类ID',
-  c_sort INT DEFAULT 0 COMMENT '显示顺序',
-  c_subject VARCHAR(255) NOT NULL COMMENT '标题',
+  c_classify CHAR(32) NOT NULL COMMENT '分类',
+  c_sort INT DEFAULT 0 COMMENT '顺序',
+  c_subject VARCHAR(255) DEFAULT NULL COMMENT '标题',
+  c_summary TEXT DEFAULT NULL COMMENT '摘要',
   c_content TEXT DEFAULT NULL COMMENT '内容',
   c_html TEXT DEFAULT NULL COMMENT 'HTML内容',
 

@@ -14,6 +14,8 @@ import com.zoe.rus.uc.home.HomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
+
 /**
  * @author lpw
  */
@@ -61,6 +63,7 @@ public class UserServiceImpl implements UserService {
                 user.setNick(nick);
         }
         user.setGender(gender);
+        user.setRegister(new Timestamp(System.currentTimeMillis()));
         userDao.save(user);
         if (!authService.create(user.getId(), username, 0)) {
             userDao.rollback();

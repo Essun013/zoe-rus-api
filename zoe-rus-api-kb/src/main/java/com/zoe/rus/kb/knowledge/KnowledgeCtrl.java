@@ -58,6 +58,22 @@ public class KnowledgeCtrl {
         return "true".equals(request.get("html"));
     }
 
+    /**
+     * 获取HTML内容。
+     * id 知识ID值。
+     *
+     * @return ""。
+     */
+    @Execute(name = "html", type = Templates.STRING, validates = {
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
+    })
+    public Object html() {
+        templates.get(Templates.STRING).setContentType("text/html");
+        String html = knowledgeService.getHtml(request.get("id"));
+
+        return html == null ? "" : html;
+    }
+
     @Execute(name = "reload")
     public Object reload() {
         knowledgeService.reload();

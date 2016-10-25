@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 @Service(KnowledgeModel.NAME + ".service")
 public class KnowledgeServiceImpl implements KnowledgeService {
     private static final String CLASSIFY_KEY = "kb.knowledge.classify";
+    private static final String CACHE_JSON = KnowledgeModel.NAME + ".service.json:";
     private static final String CACHE_HTML = KnowledgeModel.NAME + ".service.html:";
     private static final Pattern SORT_NAME = Pattern.compile("^\\d+");
 
@@ -65,8 +66,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected KeyWordService keyWordService;
     @Autowired
     protected KnowledgeDao knowledgeDao;
-    @Value("${" + KnowledgeModel.NAME + ".url:}")
-    protected String url;
     @Value("${" + KnowledgeModel.NAME + ".solr:}")
     protected String solr;
     protected String md4solr;
@@ -76,7 +75,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject get(String id, boolean html) {
-        String key = CACHE_HTML + html + id;
+        String key = CACHE_JSON + html + id;
         JSONObject object = cache.get(key);
         if (object == null) {
             KnowledgeModel knowledge = knowledgeDao.findById(id);
@@ -91,7 +90,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject find(String subject, boolean html) {
-        String key = CACHE_HTML + cacheHtmlKey + html + subject;
+        String key = CACHE_JSON + cacheHtmlKey + html + subject;
         JSONObject object = cache.get(key);
         if (object == null) {
             ClassifyModel classify = classifyService.find(CLASSIFY_KEY, 0);
@@ -110,6 +109,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     protected JSONObject toJson(KnowledgeModel knowledge, boolean html) {
         JSONObject object = new JSONObject();
+        object.put("id", knowledge.getId());
         object.put("subject", knowledge.getSubject());
         if (!validator.isEmpty(knowledge.getImage()))
             object.put("image", knowledge.getImage());
@@ -124,10 +124,22 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void reload() {
-        if (validator.isEmpty(url))
-            url = request.getUrl().replaceAll(request.getUri(), "");
+    public String getHtml(String id) {
+        String key = CACHE_HTML + id;
+        String html = cache.get(key);
+        if (html == null) {
+            KnowledgeModel knowledge = knowledgeDao.findById(id);
+            if (knowledge == null)
+                return null;
 
+            cache.put(key, html = knowledge.getHtml(), false);
+        }
+
+        return html;
+    }
+
+    @Override
+    public void reload() {
         clean();
         JSONObject json = new JSONObject();
         scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
@@ -234,10 +246,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         StringBuilder lb = new StringBuilder();
         String path = KnowledgeService.PATH + path(classify.getId()) + "/" + name + "/";
         if (new File(context.getAbsolutePath(path + "image.png")).exists())
-            knowledge.setImage(url + path + "image.png");
+            knowledge.setImage(path + "image.png");
         if (new File(context.getAbsolutePath(path + "thumbnail.png")).exists())
-            knowledge.setThumbnail(url + path + "thumbnail.png");
-        knowledge.setHtml(toHtml(kws, mps, sm, lb, url + path, knowledge.getContent()));
+            knowledge.setThumbnail(path + "thumbnail.png");
+        knowledge.setHtml(toHtml(kws, mps, sm, lb, path, knowledge.getContent()));
         knowledge.setSummary(sm.toString());
         knowledge.setLabel(lb.toString());
         knowledgeDao.save(knowledge);

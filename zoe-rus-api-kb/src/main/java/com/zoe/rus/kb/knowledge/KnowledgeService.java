@@ -12,5 +12,7 @@ public interface KnowledgeService {
 
     JSONObject find(String subject, boolean html);
 
+    String getHtml(String id);
+
     void reload();
 }

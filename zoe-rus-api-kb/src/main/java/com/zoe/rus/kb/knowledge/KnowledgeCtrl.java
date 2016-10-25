@@ -33,7 +33,7 @@ public class KnowledgeCtrl {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
     })
     public Object get() {
-        JSONObject knowledge = knowledgeService.get(request.get("id"), hasHtml());
+        JSONObject knowledge = knowledgeService.get(request.get("id"));
 
         return knowledge == null ? new JSONObject() : knowledge;
     }
@@ -49,13 +49,9 @@ public class KnowledgeCtrl {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "subject", failureCode = 2)
     })
     public Object find() {
-        JSONObject knowledge = knowledgeService.find(request.get("subject"), hasHtml());
+        JSONObject knowledge = knowledgeService.find(request.get("subject"));
 
         return knowledge == null ? new JSONObject() : knowledge;
-    }
-
-    protected boolean hasHtml() {
-        return "true".equals(request.get("html"));
     }
 
     /**

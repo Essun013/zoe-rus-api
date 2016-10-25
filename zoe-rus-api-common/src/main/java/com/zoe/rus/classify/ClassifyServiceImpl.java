@@ -1,6 +1,8 @@
 package com.zoe.rus.classify;
 
+import com.zoe.commons.cache.Cache;
 import com.zoe.commons.dao.orm.PageList;
+import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +17,14 @@ import java.util.Set;
  */
 @Service(ClassifyModel.NAME + ".service")
 public class ClassifyServiceImpl implements ClassifyService {
+    private static final String CACHE_NAMES = ClassifyModel.NAME + ".service.names:";
+
     @Autowired
     protected Validator validator;
+    @Autowired
+    protected Converter converter;
+    @Autowired
+    protected Cache cache;
     @Autowired
     protected ClassifyDao classifyDao;
 
@@ -104,22 +112,27 @@ public class ClassifyServiceImpl implements ClassifyService {
     }
 
     @Override
-    public List<ClassifyModel> find(String key, List<String> names) {
-        List<ClassifyModel> list = new ArrayList<>();
-        find(list, classifyDao.root(key), names, 0);
+    public List<ClassifyModel> find(String key, String[] names) {
+        String cacheKey = CACHE_NAMES + converter.toString(names);
+        List<ClassifyModel> list = cache.get(cacheKey);
+        if (list == null) {
+            list = new ArrayList<>();
+            find(list, classifyDao.root(key), names, 0);
+            cache.put(cacheKey, list, false);
+        }
 
         return list;
     }
 
-    protected void find(List<ClassifyModel> list, PageList<ClassifyModel> pl, List<String> names, int index) {
+    protected void find(List<ClassifyModel> list, PageList<ClassifyModel> pl, String[] names, int index) {
         if (pl.getList().isEmpty())
             return;
 
-        String name = names.get(index);
+        String name = names[index];
         for (ClassifyModel classify : pl.getList()) {
             if (classify.getName().contains(name)) {
                 list.add(classify);
-                if (index < names.size() - 1)
+                if (index < names.length - 1)
                     find(list, classifyDao.children(classify.getId()), names, index + 1);
 
                 break;

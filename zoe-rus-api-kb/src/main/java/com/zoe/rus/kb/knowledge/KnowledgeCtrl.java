@@ -70,6 +70,27 @@ public class KnowledgeCtrl {
         return html == null ? "" : html;
     }
 
+    /**
+     * 检索知识。
+     * classify 分类，多个级间以逗号分割。
+     * day 天数，即@PM设置的时间。
+     * pageSize 每页显示记录数。
+     * pageNum 当前显示页数。
+     *
+     * @return {count,page,number,list:[]}。
+     */
+    @Execute(name = "query", type = Templates.STRING, validates = {
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "classify", failureCode = 3)
+    })
+    public Object query() {
+        return knowledgeService.query(request.getAsArray("classify"), request.getAsInt("day"));
+    }
+
+    /**
+     * 重新生成知识。
+     *
+     * @return ""。
+     */
     @Execute(name = "reload")
     public Object reload() {
         knowledgeService.reload();

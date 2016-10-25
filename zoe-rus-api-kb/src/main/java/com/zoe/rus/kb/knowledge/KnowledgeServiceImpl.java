@@ -2,6 +2,7 @@ package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.cache.Cache;
 import com.zoe.commons.ctrl.context.Request;
+import com.zoe.commons.dao.orm.PageList;
 import com.zoe.commons.util.Context;
 import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Generator;
@@ -13,6 +14,8 @@ import com.zoe.rus.classify.ClassifyModel;
 import com.zoe.rus.classify.ClassifyService;
 import com.zoe.rus.kb.keyword.KeyWordService;
 import com.zoe.rus.util.DateTime;
+import com.zoe.rus.util.Pagination;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.commonmark.html.HtmlRenderer;
 import org.commonmark.node.Node;
@@ -27,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -62,6 +66,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected Request request;
     @Autowired
     protected DateTime dateTime;
+    @Autowired
+    protected Pagination pagination;
     @Autowired
     protected ClassifyService classifyService;
     @Autowired
@@ -113,6 +119,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         JSONObject object = new JSONObject();
         object.put("id", knowledge.getId());
         object.put("subject", knowledge.getSubject());
+        object.put("start", knowledge.getStart());
+        object.put("end", knowledge.getEnd());
         if (!validator.isEmpty(knowledge.getImage()))
             object.put("image", knowledge.getImage());
         if (!validator.isEmpty(knowledge.getThumbnail()))
@@ -136,6 +144,30 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
 
         return html;
+    }
+
+    @Override
+    public JSONObject query(String[] classify, int day) {
+        JSONObject object = new JSONObject();
+        List<ClassifyModel> list = classifyService.find(CLASSIFY_KEY, classify);
+        if (list.isEmpty())
+            return putPageInfo(object, 0, 0, 0);
+
+        PageList<KnowledgeModel> pl = knowledgeDao.query(list.get(list.size() - 1).getId(), day, pagination.getPageSize(), pagination.getPageNum());
+        putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber());
+        JSONArray array = new JSONArray();
+        pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
+        object.put("list", array);
+
+        return object;
+    }
+
+    protected JSONObject putPageInfo(JSONObject object, int count, int size, int number) {
+        object.put("count", count);
+        object.put("size", size);
+        object.put("number", number);
+
+        return object;
     }
 
     @Override

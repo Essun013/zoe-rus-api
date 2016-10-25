@@ -25,5 +25,5 @@ public interface ClassifyService {
 
     ClassifyModel find(String key, int sort);
 
-    List<ClassifyModel> find(String key, List<String> names);
+    List<ClassifyModel> find(String key, String[] names);
 }

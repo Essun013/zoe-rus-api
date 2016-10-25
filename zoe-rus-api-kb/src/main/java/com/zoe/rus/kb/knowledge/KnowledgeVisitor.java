@@ -31,8 +31,9 @@ class KnowledgeVisitor extends AbstractVisitor {
     public void visit(Text text) {
         String literal = text.getLiteral().trim();
         if (literal.startsWith("@KW ")) {
-            for (String kw : literal.split(" "))
-                kws.add(kw);
+            String[] array = literal.split(" ");
+            for (int i = 1; i < array.length; i++)
+                kws.add(array[i]);
             text.setLiteral(EMPTY);
 
             return;

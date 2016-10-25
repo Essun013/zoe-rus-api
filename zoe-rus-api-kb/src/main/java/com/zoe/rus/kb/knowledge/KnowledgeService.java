@@ -14,5 +14,7 @@ public interface KnowledgeService {
 
     String getHtml(String id);
 
+    JSONObject query(String[] classify, int day);
+
     void reload();
 }

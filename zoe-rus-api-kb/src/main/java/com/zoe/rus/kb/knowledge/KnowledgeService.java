@@ -8,9 +8,9 @@ import net.sf.json.JSONObject;
 public interface KnowledgeService {
     String PATH = "/kb";
 
-    JSONObject get(String id, boolean html);
+    JSONObject get(String id);
 
-    JSONObject find(String subject, boolean html);
+    JSONObject find(String subject);
 
     String getHtml(String id);
 

@@ -7,6 +7,7 @@ import com.zoe.commons.ctrl.validate.Validate;
 import com.zoe.commons.ctrl.validate.Validators;
 import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.commons.util.Message;
+import com.zoe.rus.uc.home.HomeService;
 import com.zoe.rus.uc.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,7 +39,8 @@ public class TimelineCtrl {
      */
     @Execute(name = "create", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameters = {"lmp", " childbirth", "birthday"}, failureCode = 1, failureKey = TimelineModel.NAME + ".lmp-childbirth-birthday.empty"),
-            @Validate(validator = UserService.VALIDATOR_SIGN_IN, failureCode = 2)
+            @Validate(validator = UserService.VALIDATOR_SIGN_IN, failureCode = 2),
+            @Validate(validator = HomeService.VALIDATOR_EXISTS, failureCode = 3)
     })
     public Object create() {
         return timelineService.create(request.getAsDate("lmp"), request.getAsDate("childbirth"), request.getAsDate("birthday")) ? "" :
@@ -50,7 +52,10 @@ public class TimelineCtrl {
      *
      * @return {TimelineModel}。
      */
-    @Execute(name = "get")
+    @Execute(name = "get", validates = {
+            @Validate(validator = UserService.VALIDATOR_SIGN_IN, failureCode = 2),
+            @Validate(validator = HomeService.VALIDATOR_EXISTS, failureCode = 3)
+    })
     public Object get() {
         return modelHelper.toJson(timelineService.get());
     }

@@ -74,23 +74,23 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected Map<String, Set<String>> kws;
 
     @Override
-    public JSONObject get(String id, boolean html) {
-        String key = CACHE_JSON + html + id;
+    public JSONObject get(String id) {
+        String key = CACHE_JSON + id;
         JSONObject object = cache.get(key);
         if (object == null) {
             KnowledgeModel knowledge = knowledgeDao.findById(id);
             if (knowledge == null)
                 return null;
 
-            cache.put(key, object = toJson(knowledge, html), false);
+            cache.put(key, object = toJson(knowledge), false);
         }
 
         return object;
     }
 
     @Override
-    public JSONObject find(String subject, boolean html) {
-        String key = CACHE_JSON + cacheHtmlKey + html + subject;
+    public JSONObject find(String subject) {
+        String key = CACHE_JSON + cacheHtmlKey + subject;
         JSONObject object = cache.get(key);
         if (object == null) {
             ClassifyModel classify = classifyService.find(CLASSIFY_KEY, 0);
@@ -101,13 +101,13 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             if (knowledge == null)
                 return null;
 
-            cache.put(key, object = toJson(knowledge, html), false);
+            cache.put(key, object = toJson(knowledge), false);
         }
 
         return object;
     }
 
-    protected JSONObject toJson(KnowledgeModel knowledge, boolean html) {
+    protected JSONObject toJson(KnowledgeModel knowledge) {
         JSONObject object = new JSONObject();
         object.put("id", knowledge.getId());
         object.put("subject", knowledge.getSubject());
@@ -117,8 +117,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             object.put("thumbnail", knowledge.getThumbnail());
         object.put("summary", knowledge.getSummary());
         object.put("label", knowledge.getLabel());
-        if (html)
-            object.put("html", knowledge.getHtml());
 
         return object;
     }

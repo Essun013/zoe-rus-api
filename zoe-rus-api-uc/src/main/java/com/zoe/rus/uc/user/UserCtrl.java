@@ -19,7 +19,7 @@ import org.springframework.stereotype.Controller;
 @Controller(UserModel.NAME + ".ctrl")
 @Execute(name = "/uc/user/", key = UserModel.NAME, code = "41")
 public class UserCtrl {
-    private static final int CODE = 4100;
+    static final int CODE = 4100;
 
     @Autowired
     protected Message message;

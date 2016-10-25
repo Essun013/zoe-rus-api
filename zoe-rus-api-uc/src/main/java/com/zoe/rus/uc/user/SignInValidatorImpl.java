@@ -22,4 +22,9 @@ public class SignInValidatorImpl extends ValidatorSupport {
     public boolean validate(ValidateWrapper validate, String parameter) {
         return userService.get() != null;
     }
+
+    @Override
+    public int getFailureCode(ValidateWrapper validate) {
+        return UserCtrl.CODE + 91;
+    }
 }

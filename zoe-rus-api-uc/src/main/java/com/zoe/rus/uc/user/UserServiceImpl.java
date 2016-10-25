@@ -63,7 +63,8 @@ public class UserServiceImpl implements UserService {
                 user.setNick(nick);
         }
         user.setGender(gender);
-        user.setRegister(new Timestamp(System.currentTimeMillis()));
+        if (user.getRegister() == null)
+            user.setRegister(new Timestamp(System.currentTimeMillis()));
         userDao.save(user);
         if (!authService.create(user.getId(), username, 0)) {
             userDao.rollback();

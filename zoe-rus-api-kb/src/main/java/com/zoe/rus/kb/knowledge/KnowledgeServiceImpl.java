@@ -12,6 +12,7 @@ import com.zoe.commons.util.Validator;
 import com.zoe.rus.classify.ClassifyModel;
 import com.zoe.rus.classify.ClassifyService;
 import com.zoe.rus.kb.keyword.KeyWordService;
+import com.zoe.rus.util.DateTime;
 import net.sf.json.JSONObject;
 import org.commonmark.html.HtmlRenderer;
 import org.commonmark.node.Node;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -60,6 +60,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected Logger logger;
     @Autowired
     protected Request request;
+    @Autowired
+    protected DateTime dateTime;
     @Autowired
     protected ClassifyService classifyService;
     @Autowired
@@ -239,7 +241,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         knowledge.setSubject(subject.substring(0, subject.length() - 3));
         knowledge.setContent(new String(io.read(md)));
         Set<String> kws = new HashSet<>();
-        List<String> mps = new ArrayList<>();
+        StringBuilder mp = new StringBuilder();
         StringBuilder sm = new StringBuilder();
         StringBuilder lb = new StringBuilder();
         String path = KnowledgeService.PATH + path(classify.getId()) + "/" + name + "/";
@@ -247,7 +249,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             knowledge.setImage(path + "image.png");
         if (new File(context.getAbsolutePath(path + "thumbnail.png")).exists())
             knowledge.setThumbnail(path + "thumbnail.png");
-        knowledge.setHtml(toHtml(kws, mps, sm, lb, path, knowledge.getContent()));
+        knowledge.setHtml(toHtml(kws, mp, sm, lb, path, knowledge.getContent()));
+        int[] range = dateTime.range(mp.toString());
+        knowledge.setStart(range[0]);
+        knowledge.setEnd(range[1]);
         knowledge.setSummary(sm.toString());
         knowledge.setLabel(lb.toString());
         knowledgeDao.save(knowledge);
@@ -296,10 +301,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
     }
 
-    protected String toHtml(Set<String> kws, List<String> mps, StringBuilder sm, StringBuilder lb, String path, String md) {
+    protected String toHtml(Set<String> kws, StringBuilder mp, StringBuilder sm, StringBuilder lb, String path, String md) {
         Parser parser = Parser.builder().build();
         Node node = parser.parse(md);
-        node.accept(new KnowledgeVisitor(kws, mps, sm, lb, path));
+        node.accept(new KnowledgeVisitor(kws, mp, sm, lb, path));
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_P, "").replaceAll(">\\s+", ">");

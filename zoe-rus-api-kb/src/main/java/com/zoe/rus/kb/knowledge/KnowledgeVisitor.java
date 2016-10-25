@@ -4,7 +4,6 @@ import org.commonmark.node.AbstractVisitor;
 import org.commonmark.node.Image;
 import org.commonmark.node.Text;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,14 +14,14 @@ class KnowledgeVisitor extends AbstractVisitor {
     static final String EMPTY_P = "<p>" + EMPTY + "</p>";
 
     private Set<String> kws;
-    private List<String> mps;
+    private StringBuilder mp;
     private StringBuilder sm;
     private StringBuilder lb;
     private String path;
 
-    KnowledgeVisitor(Set<String> kws, List<String> mps, StringBuilder sm, StringBuilder lb, String path) {
+    KnowledgeVisitor(Set<String> kws, StringBuilder mp, StringBuilder sm, StringBuilder lb, String path) {
         this.kws = kws;
-        this.mps = mps;
+        this.mp = mp;
         this.sm = sm;
         this.lb = lb;
         this.path = path;
@@ -39,29 +38,26 @@ class KnowledgeVisitor extends AbstractVisitor {
             return;
         }
 
-        if (literal.startsWith("@MP ")) {
-            for (String mp : literal.split("-"))
-                mps.add(mp);
-            text.setLiteral(EMPTY);
-
+        if (append(text, literal, "@MP ", mp))
             return;
-        }
 
-        if (literal.startsWith("@SM ")) {
-            sm.append(literal.substring(4));
-            text.setLiteral(EMPTY);
-
+        if (append(text, literal, "@sm ", sm))
             return;
-        }
 
-        if (literal.startsWith("@LB ")) {
-            lb.append(literal.substring(4));
-            text.setLiteral(EMPTY);
-
+        if (append(text, literal, "@LB ", lb))
             return;
-        }
 
         visitChildren(text);
+    }
+
+    protected boolean append(Text text, String literal, String tag, StringBuilder sb) {
+        if (!literal.startsWith(tag))
+            return false;
+
+        sb.append(literal.substring(4));
+        text.setLiteral(EMPTY);
+
+        return true;
     }
 
     @Override

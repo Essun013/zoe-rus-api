@@ -23,6 +23,8 @@ public class KnowledgeModel extends ModelSupport {
     private String classify; // 分类
     private int sort; // 顺序
     private String subject; // 标题
+    private int start; // 开始天数
+    private int end; // 结束天数
     private String image; // 主图
     private String thumbnail; // 缩略图
     private String summary; // 摘要
@@ -58,6 +60,26 @@ public class KnowledgeModel extends ModelSupport {
 
     public void setSubject(String subject) {
         this.subject = subject;
+    }
+
+    @Jsonable
+    @Column(name = "c_start")
+    public int getStart() {
+        return start;
+    }
+
+    public void setStart(int start) {
+        this.start = start;
+    }
+
+    @Jsonable
+    @Column(name = "c_end")
+    public int getEnd() {
+        return end;
+    }
+
+    public void setEnd(int end) {
+        this.end = end;
     }
 
     @Jsonable

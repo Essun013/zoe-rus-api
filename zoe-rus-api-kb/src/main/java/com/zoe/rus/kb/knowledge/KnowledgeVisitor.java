@@ -41,7 +41,7 @@ class KnowledgeVisitor extends AbstractVisitor {
         if (append(text, literal, "@MP ", mp))
             return;
 
-        if (append(text, literal, "@sm ", sm))
+        if (append(text, literal, "@SM ", sm))
             return;
 
         if (append(text, literal, "@LB ", lb))

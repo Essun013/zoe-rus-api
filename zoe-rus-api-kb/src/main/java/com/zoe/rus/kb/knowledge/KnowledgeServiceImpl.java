@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -171,7 +170,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     @Override
-    public void reload() {
+    public synchronized void reload() {
         clean();
         JSONObject json = new JSONObject();
         scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
@@ -183,7 +182,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
         try {
             Runtime.getRuntime().exec("sh " + context.getAbsolutePath("/WEB-INF/solr.sh") + " " + solr + " " + md4solr);
-        } catch (IOException e) {
+        } catch (Exception e) {
             logger.warn(e, "执行solr脚本时发生异常！");
         }
     }

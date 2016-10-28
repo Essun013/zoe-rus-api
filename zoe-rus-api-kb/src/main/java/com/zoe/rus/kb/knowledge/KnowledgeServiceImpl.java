@@ -43,6 +43,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     private static final String CLASSIFY_KEY = "kb.knowledge.classify";
     private static final String CACHE_JSON = KnowledgeModel.NAME + ".service.json:";
     private static final String CACHE_HTML = KnowledgeModel.NAME + ".service.html:";
+    private static final String CACHE_LIST = KnowledgeModel.NAME + ".service.list:";
     private static final Pattern SORT_NAME = Pattern.compile("^\\d+");
 
     @Autowired
@@ -76,7 +77,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Value("${" + KnowledgeModel.NAME + ".solr:}")
     protected String solr;
     protected String md4solr;
-    protected String cacheHtmlKey = "";
+    protected String cacheRandom = "";
     protected Map<String, String> path;
     protected Map<String, Set<String>> kws;
 
@@ -97,7 +98,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject find(String subject) {
-        String key = CACHE_JSON + cacheHtmlKey + subject;
+        String key = CACHE_JSON + cacheRandom + subject;
         JSONObject object = cache.get(key);
         if (object == null) {
             ClassifyModel classify = classifyService.find(CLASSIFY_KEY, 0);
@@ -147,26 +148,34 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject query(String[] classify, int day) {
-        JSONObject object = new JSONObject();
-        List<ClassifyModel> list = classifyService.find(CLASSIFY_KEY, classify);
-        if (list.isEmpty())
-            return putPageInfo(object, 0, 0, 0);
+        String key = CACHE_LIST + cacheRandom + converter.toString(classify) + day;
+        JSONObject object = cache.get(key);
+        if (object == null) {
+            object = new JSONObject();
+            List<ClassifyModel> list = classifyService.find(CLASSIFY_KEY, classify);
+            if (list.isEmpty())
+                putPageInfo(object, 0, 0, 0, new JSONArray());
+            else {
+                String classifyId = list.get(list.size() - 1).getId();
+                Set<String> classifies = classifyService.children(classifyId);
+                classifies.add(classifyId);
 
-        PageList<KnowledgeModel> pl = knowledgeDao.query(list.get(list.size() - 1).getId(), day, pagination.getPageSize(), pagination.getPageNum());
-        putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber());
-        JSONArray array = new JSONArray();
-        pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
-        object.put("list", array);
+                PageList<KnowledgeModel> pl = knowledgeDao.query(classifies, day, pagination.getPageSize(), pagination.getPageNum());
+                JSONArray array = new JSONArray();
+                pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
+                putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
+            }
+            cache.put(key, object, false);
+        }
 
         return object;
     }
 
-    protected JSONObject putPageInfo(JSONObject object, int count, int size, int number) {
+    protected void putPageInfo(JSONObject object, int count, int size, int number, JSONArray list) {
         object.put("count", count);
         object.put("size", size);
         object.put("number", number);
-
-        return object;
+        object.put("list", list);
     }
 
     @Override
@@ -175,7 +184,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         JSONObject json = new JSONObject();
         scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
         keyWordService.save(kws);
-        cacheHtmlKey = generator.random(32);
+        cacheRandom = generator.random(32);
 
         if (validator.isEmpty(solr))
             return;

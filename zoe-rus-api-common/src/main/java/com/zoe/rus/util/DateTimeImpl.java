@@ -26,6 +26,7 @@ public class DateTimeImpl implements DateTime {
     }
 
     protected int toDay(String string, boolean end) {
+        int sum = 0;
         int day = 0;
         char[] chars = string.toCharArray();
         char ch = 0;
@@ -39,16 +40,21 @@ public class DateTimeImpl implements DateTime {
                 day = day * 30 + (day >> 1);
             else if (ch == 'w')
                 day *= 7;
+
+            if (ch < '0' || ch > '9') {
+                sum += day;
+                day = 0;
+            }
         }
         if (end) {
             if (ch == 'y')
-                day += 365;
+                sum += 365;
             else if (ch == 'm')
-                day += 30;
+                sum += 30;
             else if (ch == 'w')
-                day += 7;
+                sum += 7;
         }
 
-        return day;
+        return sum;
     }
 }

@@ -2,6 +2,8 @@ package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.dao.orm.PageList;
 
+import java.util.Set;
+
 /**
  * @author lpw
  */
@@ -14,5 +16,5 @@ interface KnowledgeDao {
 
     KnowledgeModel findBySubject(String classify, String subject);
 
-    PageList<KnowledgeModel> query(String classify, int day, int pageSize, int pageNum);
+    PageList<KnowledgeModel> query(Set<String> classifies, int day, int pageSize, int pageNum);
 }

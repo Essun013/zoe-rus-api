@@ -7,6 +7,8 @@ import com.zoe.commons.util.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author lpw
  */
@@ -40,5 +42,10 @@ class ClassifyDaoImpl implements ClassifyDao {
     @Override
     public void delete(String key) {
         liteOrm.delete(new LiteQuery(ClassifyModel.class).where("c_key=?"), new Object[]{key});
+    }
+
+    @Override
+    public void delete(ClassifyModel classify) {
+        liteOrm.delete(classify);
     }
 }

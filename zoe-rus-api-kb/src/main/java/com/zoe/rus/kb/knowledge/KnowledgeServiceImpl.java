@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -152,15 +151,11 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         JSONObject object = cache.get(key);
         if (object == null) {
             object = new JSONObject();
-            List<ClassifyModel> list = classifyService.find(CLASSIFY_KEY, classify);
-            if (list.isEmpty())
+            Set<String> ids = getIds(classify);
+            if (ids.isEmpty())
                 putPageInfo(object, 0, 0, 0, new JSONArray());
             else {
-                String classifyId = list.get(list.size() - 1).getId();
-                Set<String> classifies = classifyService.children(classifyId);
-                classifies.add(classifyId);
-
-                PageList<KnowledgeModel> pl = knowledgeDao.query(classifies, day, pagination.getPageSize(), pagination.getPageNum());
+                PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, pagination.getPageSize(), pagination.getPageNum());
                 JSONArray array = new JSONArray();
                 pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
                 putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
@@ -169,6 +164,26 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         }
 
         return object;
+    }
+
+    protected Set<String> getIds(String[] classify) {
+        Set<String> set = new HashSet<>();
+        List<ClassifyModel> list = classifyService.find(CLASSIFY_KEY, classify);
+        if (list.isEmpty())
+            set.addAll(classifyService.links(CLASSIFY_KEY, classify[0]));
+        else
+            set.add(list.get(list.size() - 1).getId());
+
+        Set<String> ids = new HashSet<>();
+        if (set.isEmpty())
+            return ids;
+
+        set.forEach(id -> {
+            ids.addAll(classifyService.children(id));
+            ids.add(id);
+        });
+
+        return ids;
     }
 
     protected void putPageInfo(JSONObject object, int count, int size, int number, JSONArray list) {
@@ -250,9 +265,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             classify.setSort(sort);
             classify.setName(name);
             classifyService.save(classify);
-            if (parent.getChildren() == null)
-                parent.setChildren(new ArrayList<>());
-            parent.getChildren().add(classify);
 
             json.put("id", classify.getId());
             json.put("name", classify.getName());

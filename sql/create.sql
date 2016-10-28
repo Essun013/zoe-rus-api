@@ -3,18 +3,19 @@ CREATE TABLE t_common_classify
 (
   c_id CHAR(32) NOT NULL COMMENT '主键',
   c_key VARCHAR(255) NOT NULL COMMENT '引用Key',
-  c_parent CHAR(32) DEFAULT NULL COMMENT '上级分类ID',
+  c_parent CHAR(32) NOT NULL COMMENT '上级分类ID',
   c_sort INT DEFAULT 0 COMMENT '显示顺序',
   c_name VARCHAR(255) DEFAULT NULL COMMENT '分类名称',
+  c_label TEXT DEFAULT NULL COMMENT '标签',
 
   PRIMARY KEY pk_common_classify(c_id),
   KEY k_common_classify_key(c_key),
   KEY k_common_classify_parent(c_parent)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-INSERT INTO t_common_classify values('42051871815346bb9f4da5e1479b3519','region',NULL,0,'中国');
-INSERT INTO t_common_classify values('a040468120a743eba039fee5a653d087','region','42051871815346bb9f4da5e1479b3519',59,'福建省');
-INSERT INTO t_common_classify values('b13e90d07bab429094c80d8e7e366639','region','a040468120a743eba039fee5a653d087',2,'厦门市');
-INSERT INTO t_common_classify values('5cdbb3575ee34fac84f0856168ce4130','region','b13e90d07bab429094c80d8e7e366639',1,'思明区');
+INSERT INTO t_common_classify values('42051871815346bb9f4da5e1479b3519','region',NULL,0,'中国',NULL);
+INSERT INTO t_common_classify values('a040468120a743eba039fee5a653d087','region','42051871815346bb9f4da5e1479b3519',59,'福建省',NULL);
+INSERT INTO t_common_classify values('b13e90d07bab429094c80d8e7e366639','region','a040468120a743eba039fee5a653d087',2,'厦门市',NULL);
+INSERT INTO t_common_classify values('5cdbb3575ee34fac84f0856168ce4130','region','b13e90d07bab429094c80d8e7e366639',1,'思明区',NULL);
 
 DROP TABLE IF EXISTS t_kb_key_word;
 CREATE TABLE t_kb_key_word

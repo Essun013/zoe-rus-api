@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.List;
 
 /**
  * @author lpw
@@ -18,14 +17,14 @@ import java.util.List;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = ClassifyModel.NAME)
 @Table(name = "t_common_classify")
-public class ClassifyModel extends ModelSupport implements Comparable<ClassifyModel> {
+public class ClassifyModel extends ModelSupport {
     static final String NAME = "rus.common.classify";
 
-    private String key;
-    private String parent;
-    private int sort;
-    private String name;
-    private List<ClassifyModel> children;
+    private String key; // 引用Key
+    private String parent; // 上级分类ID
+    private int sort; // 显示顺序
+    private String name; // 分类名称
+    private String label; // 标签
 
     @Jsonable
     @Column(name = "c_key")
@@ -67,16 +66,13 @@ public class ClassifyModel extends ModelSupport implements Comparable<ClassifyMo
         this.name = name;
     }
 
-    public List<ClassifyModel> getChildren() {
-        return children;
+    @Jsonable
+    @Column(name = "c_label")
+    public String getLabel() {
+        return label;
     }
 
-    public void setChildren(List<ClassifyModel> children) {
-        this.children = children;
-    }
-
-    @Override
-    public int compareTo(ClassifyModel o) {
-        return sort - o.sort;
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

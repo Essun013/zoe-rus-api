@@ -2,6 +2,8 @@ package com.zoe.rus.classify;
 
 import com.zoe.commons.dao.orm.PageList;
 
+import java.util.List;
+
 /**
  * @author lpw
  */
@@ -15,4 +17,6 @@ interface ClassifyDao {
     void save(ClassifyModel classify);
 
     void delete(String key);
+
+    void delete(ClassifyModel classify);
 }

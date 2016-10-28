@@ -57,4 +57,22 @@ public class ClassifyCtrl {
 
         return "";
     }
+
+    /**
+     * 创建链接分类。
+     * name 链接名称。
+     * label 实际分类名称集，即目标分类名称。多个间以分号分割，多级间以逗号分割。
+     *
+     * @return ""。
+     */
+    @Execute(name = "save", validates = {@Validate(validator = Validators.SIGN),
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "name", failureCode = 12),
+            @Validate(validator = Validators.MAX_LENGTH, parameter = "name", number = {100}, failureCode = 13),
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "label", failureCode = 14)
+    })
+    public Object link() {
+        classifyService.link(request.get("name"), request.get("label"));
+
+        return "";
+    }
 }

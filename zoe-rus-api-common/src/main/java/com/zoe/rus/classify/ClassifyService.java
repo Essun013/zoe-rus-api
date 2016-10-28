@@ -26,4 +26,8 @@ public interface ClassifyService {
     ClassifyModel find(String key, int sort);
 
     List<ClassifyModel> find(String key, String[] names);
+
+    void link(String name, String label);
+
+    Set<String> links(String key,String name);
 }

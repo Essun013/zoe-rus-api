@@ -18,6 +18,7 @@ import java.util.Set;
 @Service(ClassifyModel.NAME + ".service")
 public class ClassifyServiceImpl implements ClassifyService {
     private static final String CACHE_NAMES = ClassifyModel.NAME + ".service.names:";
+    private static final String LINK_KEY = "link";
 
     @Autowired
     protected Validator validator;
@@ -138,5 +139,29 @@ public class ClassifyServiceImpl implements ClassifyService {
                 break;
             }
         }
+    }
+
+    @Override
+    public void link(String name, String label) {
+        ClassifyModel classify = new ClassifyModel();
+        classify.setKey(LINK_KEY);
+        classify.setName(name);
+        classify.setLabel(label);
+        classifyDao.root(LINK_KEY).getList().forEach(model -> classifyDao.delete(model));
+        classifyDao.save(classify);
+    }
+
+    @Override
+    public Set<String> links(String key, String name) {
+        Set<String> set = new HashSet<>();
+        classifyDao.root(LINK_KEY).getList().forEach(model -> {
+            for (String[] names : converter.toArray(model.getLabel(), new String[]{";", ""})) {
+                List<ClassifyModel> list = find(key, names);
+                if (!list.isEmpty())
+                    set.add(list.get(list.size() - 1).getId());
+            }
+        });
+
+        return set;
     }
 }

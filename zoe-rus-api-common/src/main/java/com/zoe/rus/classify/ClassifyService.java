@@ -13,7 +13,7 @@ public interface ClassifyService {
 
     List<ClassifyModel> query(String key, String parent);
 
-    void delete(String key);
+    void delete(String key, Set<String> ignore);
 
     void save(ClassifyModel classify);
 
@@ -29,5 +29,5 @@ public interface ClassifyService {
 
     void link(String name, String label);
 
-    Set<String> links(String key,String name);
+    Set<String> links(String key, String name);
 }

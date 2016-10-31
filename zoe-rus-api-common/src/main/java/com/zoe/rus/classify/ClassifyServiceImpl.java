@@ -57,12 +57,18 @@ public class ClassifyServiceImpl implements ClassifyService {
     }
 
     @Override
-    public void delete(String key) {
-        classifyDao.delete(key);
+    public void delete(String key, Set<String> ignore) {
+        classifyDao.delete(key, ignore);
     }
 
     @Override
     public void save(ClassifyModel classify) {
+        if (classify.getId() == null) {
+            ClassifyModel model = validator.isEmpty(classify.getParent()) ?
+                    classifyDao.findByKey(classify.getKey(), classify.getName()) : classifyDao.findByParent(classify.getParent(), classify.getName());
+            if (model != null)
+                classify.setId(model.getId());
+        }
         classifyDao.save(classify);
     }
 

@@ -3,7 +3,7 @@ CREATE TABLE t_common_classify
 (
   c_id CHAR(32) NOT NULL COMMENT '主键',
   c_key VARCHAR(255) NOT NULL COMMENT '引用Key',
-  c_parent CHAR(32) NOT NULL COMMENT '上级分类ID',
+  c_parent CHAR(32) DEFAULT NULL COMMENT '上级分类ID',
   c_sort INT DEFAULT 0 COMMENT '显示顺序',
   c_name VARCHAR(255) DEFAULT NULL COMMENT '分类名称',
   c_label TEXT DEFAULT NULL COMMENT '标签',

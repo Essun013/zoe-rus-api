@@ -8,7 +8,7 @@ import java.util.Set;
  * @author lpw
  */
 interface KnowledgeDao {
-    void delete();
+    void delete(Set<String> ignore);
 
     void save(KnowledgeModel knowledge);
 

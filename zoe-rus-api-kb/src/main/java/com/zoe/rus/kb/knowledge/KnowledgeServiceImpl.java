@@ -7,7 +7,6 @@ import com.zoe.commons.util.Context;
 import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Generator;
 import com.zoe.commons.util.Io;
-import com.zoe.commons.util.Json;
 import com.zoe.commons.util.Logger;
 import com.zoe.commons.util.Validator;
 import com.zoe.rus.classify.ClassifyModel;
@@ -56,8 +55,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Autowired
     protected Generator generator;
     @Autowired
-    protected Json json;
-    @Autowired
     protected Io io;
     @Autowired
     protected Logger logger;
@@ -79,10 +76,12 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     protected String cacheRandom = "";
     protected Map<String, String> path;
     protected Map<String, Set<String>> kws;
+    protected Set<String> classifyIds;
+    protected Set<String> knowledgeIds;
 
     @Override
     public JSONObject get(String id) {
-        String key = CACHE_JSON + id;
+        String key = CACHE_JSON + cacheRandom + id;
         JSONObject object = cache.get(key);
         if (object == null) {
             KnowledgeModel knowledge = knowledgeDao.findById(id);
@@ -132,7 +131,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public String getHtml(String id) {
-        String key = CACHE_HTML + id;
+        String key = CACHE_HTML + cacheRandom + id;
         String html = cache.get(key);
         if (html == null) {
             KnowledgeModel knowledge = knowledgeDao.findById(id);
@@ -196,9 +195,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     @Override
     public synchronized void reload() {
         clean();
-        JSONObject json = new JSONObject();
-        scan(null, json, null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
+        scan(null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));
         keyWordService.save(kws);
+        classifyService.delete(CLASSIFY_KEY, classifyIds);
         cacheRandom = generator.random(32);
 
         if (validator.isEmpty(solr))
@@ -212,8 +211,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
     }
 
     protected void clean() {
-        classifyService.delete(CLASSIFY_KEY);
-        knowledgeDao.delete();
         if (kws == null)
             kws = new HashMap<>();
         else
@@ -222,6 +219,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             path = new HashMap<>();
         else
             path.clear();
+        if (classifyIds == null)
+            classifyIds = new HashSet<>();
+        else
+            classifyIds.clear();
+        if (knowledgeIds == null)
+            knowledgeIds = new HashSet<>();
+        else
+            knowledgeIds.clear();
 
         md4solr = context.getAbsolutePath(PATH + "/md4solr") + "/";
         File md4solr = new File(this.md4solr);
@@ -232,7 +237,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
                 file.delete();
     }
 
-    protected void scan(JSONObject pjson, JSONObject json, ClassifyModel parent, ClassifyModel classify, File file) {
+    protected void scan(ClassifyModel parent, ClassifyModel classify, File file) {
         String name = file.getName();
         String[] sortName = getSortName(name);
         if (!file.isDirectory() || (parent != null && sortName == null))
@@ -242,11 +247,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             sortName = new String[]{"0", name};
         int sort = converter.toInt(sortName[0]);
         if (name.endsWith(".md"))
-            knowledge(pjson, parent, file, sort, sortName[1], name);
+            knowledge(parent, file, sort, sortName[1], name);
         else
-            classify(json, parent, classify, file, sort, sortName[1]);
-        if (pjson != null && !json.isEmpty())
-            this.json.addAsArray(pjson, "children", json);
+            classify(parent, classify, file, sort, sortName[1]);
     }
 
     protected String[] getSortName(String string) {
@@ -259,15 +262,13 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         return new String[]{sort, string.substring(sort.length())};
     }
 
-    protected void classify(JSONObject json, ClassifyModel parent, ClassifyModel classify, File file, int sort, String name) {
+    protected void classify(ClassifyModel parent, ClassifyModel classify, File file, int sort, String name) {
         if (parent != null) {
             classify.setKey(CLASSIFY_KEY);
             classify.setSort(sort);
             classify.setName(name);
             classifyService.save(classify);
-
-            json.put("id", classify.getId());
-            json.put("name", classify.getName());
+            classifyIds.add(classify.getId());
         }
         File[] files = file.listFiles();
         if (files == null)
@@ -275,22 +276,25 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
         Arrays.sort(files, (File o1, File o2) -> o1.getName().compareTo(o2.getName()));
         for (File f : files) {
-            JSONObject object = new JSONObject();
             ClassifyModel child = new ClassifyModel();
             child.setParent(classify.getId());
-            scan(json, object, classify, child, f);
+            scan(classify, child, f);
         }
     }
 
-    protected void knowledge(JSONObject json, ClassifyModel classify, File file, int sort, String subject, String name) {
+    protected void knowledge(ClassifyModel classify, File file, int sort, String subject, String name) {
         String md = getMdFile(file);
         if (md == null)
             return;
 
-        KnowledgeModel knowledge = new KnowledgeModel();
-        knowledge.setClassify(classify.getId());
+        String sbj = subject.substring(0, subject.length() - 3);
+        KnowledgeModel knowledge = knowledgeDao.findBySubject(classify.getId(), sbj);
+        if (knowledge == null) {
+            knowledge = new KnowledgeModel();
+            knowledge.setClassify(classify.getId());
+        }
         knowledge.setSort(sort);
-        knowledge.setSubject(subject.substring(0, subject.length() - 3));
+        knowledge.setSubject(sbj);
         knowledge.setContent(new String(io.read(md)));
         Set<String> kws = new HashSet<>();
         StringBuilder mp = new StringBuilder();
@@ -308,16 +312,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         knowledge.setSummary(sm.toString());
         knowledge.setLabel(lb.toString());
         knowledgeDao.save(knowledge);
+        knowledgeIds.add(knowledge.getId());
         this.kws.put(knowledge.getId(), kws);
         io.copy(md, md4solr + knowledge.getId() + ".md");
-
-        if (json == null)
-            return;
-
-        JSONObject object = new JSONObject();
-        object.put("id", knowledge.getId());
-        object.put("subject", knowledge.getSubject());
-        this.json.addAsArray(json, "knowledge", object);
     }
 
     protected String getMdFile(File file) {

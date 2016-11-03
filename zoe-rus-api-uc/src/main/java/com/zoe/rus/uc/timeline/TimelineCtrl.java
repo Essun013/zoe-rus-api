@@ -50,6 +50,22 @@ public class TimelineCtrl {
     }
 
     /**
+     * 修改时间轴。
+     * lmp 末次月经日期。
+     * childbirth 预产期。
+     * birthday 宝宝生日。
+     * region 地区ID。
+     * hospital 医院ID。
+     *
+     * @return ""。
+     */
+    public Object modify() {
+        timelineService.modify(request.getAsDate("lmp"), request.getAsDate("childbirth"), request.getAsDate("birthday"), request.get("region"), request.get("hospital"));
+
+        return "";
+    }
+
+    /**
      * 获取时间轴信息。
      *
      * @return {TimelineModel}。

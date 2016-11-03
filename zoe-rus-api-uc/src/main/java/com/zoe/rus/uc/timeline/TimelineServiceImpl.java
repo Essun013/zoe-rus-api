@@ -12,6 +12,8 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -110,8 +112,11 @@ public class TimelineServiceImpl implements TimelineService {
         resetStart(timeline, lmp, childbirth, birthday);
         List<PhysicalModel> physicals = physicalService.query(region, hospital);
         if (!physicals.isEmpty()) {
-            JSONArray physical = timelineDao.getPhysical(timeline.getId()).getJSONArray("physical");
-            JSONArray array = physical(physicals);
+            Map<Integer, JSONObject> map = new HashMap<>();
+            JSONObject physical = timelineDao.getPhysical(timeline.getId());
+            mergeToMap(map, physical.getJSONArray("physical"), false);
+            mergeToMap(map, physical(physicals), true);
+            physical.put("physical", toArray(map));
         }
         timeline.setRegion(region);
         timeline.setHospital(hospital);
@@ -119,18 +124,26 @@ public class TimelineServiceImpl implements TimelineService {
         set(timeline, true);
     }
 
-    protected void merge(JSONArray physical, JSONArray array) {
-        Map<Integer, JSONObject> map = new HashMap<>();
-        for (int i = 0, size = physical.size(); i < size; i++) {
-            JSONObject object = physical.getJSONObject(i);
-            map.put(object.getInt("sort"), object);
-        }
+    protected void mergeToMap(Map<Integer, JSONObject> map, JSONArray array, boolean checkable) {
         for (int i = 0, size = array.size(); i < size; i++) {
-            JSONObject object = array.getJSONObject(i);
-            JSONObject obj = map.get(object.getInt("sort"));
-            if (obj.has(""))
-                continue;
+            JSONObject object1 = array.getJSONObject(i);
+            int sort = object1.getInt("sort");
+            if (checkable) {
+                JSONObject object2 = map.get(sort);
+                if (object2.has("done"))
+                    continue;
+            }
+            map.put(sort, object1);
         }
+    }
+
+    protected JSONArray toArray(Map<Integer, JSONObject> map) {
+        JSONArray array = new JSONArray();
+        List<Integer> list = new ArrayList<>(map.keySet());
+        Collections.sort(list);
+        list.forEach(key -> array.add(map.get(key)));
+
+        return array;
     }
 
     @Override

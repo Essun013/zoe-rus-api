@@ -40,4 +40,11 @@ class TimelineDaoImpl implements TimelineDao {
 
         return mongo.findOne(TimelineModel.class, where);
     }
+
+    @Override
+    public void updatePhysical(String id, JSONObject object) {
+        JSONObject where = new JSONObject();
+        where.put("id", id);
+        mongo.update(TimelineModel.class, object, where);
+    }
 }

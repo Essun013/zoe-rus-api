@@ -1,6 +1,7 @@
 package com.zoe.rus.uc.timeline;
 
 import com.zoe.commons.dao.orm.PageList;
+import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 /**
@@ -14,4 +15,6 @@ interface TimelineDao {
     void insertPhysical(JSONObject json);
 
     JSONObject getPhysical(String id);
+
+    void updatePhysical(String id, JSONObject object);
 }

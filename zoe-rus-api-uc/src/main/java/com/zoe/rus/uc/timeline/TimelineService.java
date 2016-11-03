@@ -8,7 +8,9 @@ import java.util.Date;
  * @author lpw
  */
 public interface TimelineService {
-    boolean create(Date lmp, Date childbirth, Date birthday);
+    boolean create(Date lmp, Date childbirth, Date birthday, String region, String hospital);
+
+    void modify(Date lmp, Date childbirth, Date birthday, String region, String hospital);
 
     void portrait(String portrait);
 

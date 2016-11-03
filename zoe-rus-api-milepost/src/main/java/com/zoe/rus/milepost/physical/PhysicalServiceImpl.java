@@ -42,12 +42,11 @@ public class PhysicalServiceImpl implements PhysicalService {
     }
 
     @Override
-    public List<PhysicalModel> queryByRegion(String region) {
-        return fromMap(queryMapByRegion(region));
+    public List<PhysicalModel> query(String region, String hospital) {
+        return validator.isEmpty(hospital) ? fromMap(queryMapByRegion(region)) : queryByHospital(hospital);
     }
 
-    @Override
-    public List<PhysicalModel> queryByHospital(String hospitalId) {
+    protected List<PhysicalModel> queryByHospital(String hospitalId) {
         HospitalModel hospital = hospitalService.findById(hospitalId);
         if (hospital == null)
             return new ArrayList<>();
@@ -62,7 +61,7 @@ public class PhysicalServiceImpl implements PhysicalService {
         Map<Integer, PhysicalModel> map = new HashMap<>();
         queryByRegion(map, region);
         if (map.isEmpty())
-            queryByRegion(getRegionRoot());
+            queryByRegion(map, getRegionRoot());
 
         return map;
     }

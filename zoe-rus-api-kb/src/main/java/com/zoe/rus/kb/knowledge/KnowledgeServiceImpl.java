@@ -146,12 +146,14 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     @Override
     public JSONObject query(String[] classify, int day) {
-        String key = CACHE_LIST + cacheRandom + converter.toString(classify) + day;
+        int pageSize = pagination.getPageSize();
+        int pageNum = pagination.getPageNum();
+        String key = CACHE_LIST + cacheRandom + converter.toString(classify) + day + pageSize + pageNum;
         JSONObject object = cache.get(key);
         if (object == null) {
             object = new JSONObject();
             Set<String> ids = getIds(classify);
-            PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, pagination.getPageSize(), pagination.getPageNum());
+            PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, pageSize, pageNum);
             JSONArray array = new JSONArray();
             pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
             putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
@@ -355,6 +357,6 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         node.accept(new KnowledgeVisitor(kws, mp, sm, lb, path));
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
-        return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_P, "").replaceAll(">\\s+", ">");
+        return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_PP, "").replaceAll(KnowledgeVisitor.EMPTY_P, "<p>");
     }
 }

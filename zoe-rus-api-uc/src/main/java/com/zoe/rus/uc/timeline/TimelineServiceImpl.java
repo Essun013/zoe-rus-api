@@ -2,6 +2,8 @@ package com.zoe.rus.uc.timeline;
 
 import com.zoe.commons.ctrl.context.Session;
 import com.zoe.commons.dao.model.ModelHelper;
+import com.zoe.commons.util.Validator;
+import com.zoe.rus.milepost.physical.PhysicalModel;
 import com.zoe.rus.milepost.physical.PhysicalService;
 import com.zoe.rus.uc.home.HomeService;
 import com.zoe.rus.util.DateTime;
@@ -11,7 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author lpw
@@ -23,6 +27,8 @@ public class TimelineServiceImpl implements TimelineService {
     private static final String SESSION_TIMELINE = TimelineModel.NAME + ".service.session.timeline";
     private static final String SESSION_PHYSICAL = TimelineModel.NAME + ".service.session.physical";
 
+    @Autowired
+    protected Validator validator;
     @Autowired
     protected ModelHelper modelHelper;
     @Autowired
@@ -37,12 +43,28 @@ public class TimelineServiceImpl implements TimelineService {
     protected TimelineDao timelineDao;
 
     @Override
-    public boolean create(Date lmp, Date childbirth, Date birthday) {
+    public boolean create(Date lmp, Date childbirth, Date birthday, String region, String hospital) {
+        TimelineModel timeline = new TimelineModel();
+        if (!resetStart(timeline, lmp, childbirth, birthday))
+            return false;
+
+        timeline.setHome(homeService.get().getId());
+        if (!validator.isEmpty(region))
+            timeline.setRegion(region);
+        if (!validator.isEmpty(hospital))
+            timeline.setHospital(hospital);
+        timelineDao.save(timeline);
+        sort(timeline.getHome());
+        physical(timeline);
+        set(timeline, true);
+
+        return true;
+    }
+
+    protected boolean resetStart(TimelineModel timeline, Date lmp, Date childbirth, Date birthday) {
         if (lmp == null && childbirth == null && birthday == null)
             return false;
 
-        TimelineModel timeline = new TimelineModel();
-        timeline.setHome(homeService.get().getId());
         if (birthday == null) {
             if (childbirth != null)
                 lmp = new Date(childbirth.getTime() - LMP);
@@ -51,10 +73,6 @@ public class TimelineServiceImpl implements TimelineService {
             timeline.setType(1);
             timeline.setStart(new java.sql.Date(birthday.getTime()));
         }
-        timelineDao.save(timeline);
-        sort(timeline.getHome());
-        physical(timeline);
-        set(timeline, true);
 
         return true;
     }
@@ -71,14 +89,48 @@ public class TimelineServiceImpl implements TimelineService {
     protected void physical(TimelineModel timeline) {
         JSONObject json = new JSONObject();
         json.put("id", timeline.getId());
+        json.put("physical", physical(physicalService.query(timeline.getRegion(), timeline.getHospital())));
+        timelineDao.insertPhysical(json);
+    }
+
+    protected JSONArray physical(List<PhysicalModel> physicals) {
         JSONArray array = new JSONArray();
-        physicalService.queryByRegion("").forEach(physical -> {
+        physicals.forEach(physical -> {
             JSONObject object = modelHelper.toJson(physical);
             object.put("dayRange", dateTime.range(physical.getTime()));
             array.add(object);
         });
-        json.put("physical", array);
-        timelineDao.insertPhysical(json);
+
+        return array;
+    }
+
+    @Override
+    public void modify(Date lmp, Date childbirth, Date birthday, String region, String hospital) {
+        TimelineModel timeline = get();
+        resetStart(timeline, lmp, childbirth, birthday);
+        List<PhysicalModel> physicals = physicalService.query(region, hospital);
+        if (!physicals.isEmpty()) {
+            JSONArray physical = timelineDao.getPhysical(timeline.getId()).getJSONArray("physical");
+            JSONArray array = physical(physicals);
+        }
+        timeline.setRegion(region);
+        timeline.setHospital(hospital);
+        timelineDao.save(timeline);
+        set(timeline, true);
+    }
+
+    protected void merge(JSONArray physical, JSONArray array) {
+        Map<Integer, JSONObject> map = new HashMap<>();
+        for (int i = 0, size = physical.size(); i < size; i++) {
+            JSONObject object = physical.getJSONObject(i);
+            map.put(object.getInt("sort"), object);
+        }
+        for (int i = 0, size = array.size(); i < size; i++) {
+            JSONObject object = array.getJSONObject(i);
+            JSONObject obj = map.get(object.getInt("sort"));
+            if (obj.has(""))
+                continue;
+        }
     }
 
     @Override

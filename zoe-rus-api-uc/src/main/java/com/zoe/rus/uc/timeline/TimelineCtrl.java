@@ -34,6 +34,8 @@ public class TimelineCtrl {
      * lmp 末次月经日期。
      * childbirth 预产期。
      * birthday 宝宝生日。
+     * region 地区ID。
+     * hospital 医院ID。
      *
      * @return ""。
      */
@@ -43,7 +45,7 @@ public class TimelineCtrl {
             @Validate(validator = HomeService.VALIDATOR_EXISTS, failureCode = 3)
     })
     public Object create() {
-        return timelineService.create(request.getAsDate("lmp"), request.getAsDate("childbirth"), request.getAsDate("birthday")) ? "" :
+        return timelineService.create(request.getAsDate("lmp"), request.getAsDate("childbirth"), request.getAsDate("birthday"), request.get("region"), request.get("hospital")) ? "" :
                 templates.get().failure(4201, message.get(TimelineModel.NAME + ".lmp-childbirth-birthday.empty"), null, null);
     }
 

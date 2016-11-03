@@ -11,7 +11,8 @@ import java.util.Set;
  */
 class KnowledgeVisitor extends AbstractVisitor {
     static final String EMPTY = "KNOWLEDGE_VISITOR_EMPTY";
-    static final String EMPTY_P = "<p>" + EMPTY + "</p>";
+    static final String EMPTY_P = "<p>(" + EMPTY + "\\s*)+";
+    static final String EMPTY_PP = EMPTY_P + "</p>";
 
     private Set<String> kws;
     private StringBuilder mp;

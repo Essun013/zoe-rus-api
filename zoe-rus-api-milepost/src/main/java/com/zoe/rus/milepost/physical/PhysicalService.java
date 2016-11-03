@@ -12,9 +12,7 @@ public interface PhysicalService {
 
     PageList<PhysicalModel> query();
 
-    List<PhysicalModel> queryByRegion(String region);
-
-    List<PhysicalModel> queryByHospital(String hospital);
+    List<PhysicalModel> query(String region, String hospital);
 
     void save(PhysicalModel physical);
 

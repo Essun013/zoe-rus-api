@@ -91,7 +91,9 @@ public class KnowledgeCtrl {
      *
      * @return ""。
      */
-    @Execute(name = "reload")
+    @Execute(name = "reload", validates = {
+            @Validate(validator = Validators.SIGN)
+    })
     public Object reload() {
         knowledgeService.reload();
 

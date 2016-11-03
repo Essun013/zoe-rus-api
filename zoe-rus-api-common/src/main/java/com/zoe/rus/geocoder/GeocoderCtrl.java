@@ -24,8 +24,8 @@ public class GeocoderCtrl {
      * @return {address:"",component:{}}。
      */
     @Execute(name = "address", validates = {
-            @Validate(validator = Validators.MATCH_REGEX, parameter = "lat", string = {"^-?\\d{1,3}\\.\\d{3,6}$"}, failureCode = 1),
-            @Validate(validator = Validators.MATCH_REGEX, parameter = "lng", string = {"^\\d{1,3}\\.\\d{3,6}$"}, failureCode = 2)
+            @Validate(validator = Validators.MATCH_REGEX, parameter = "lat", string = {"^-?\\d{1,3}\\.\\d+$"}, failureCode = 1),
+            @Validate(validator = Validators.MATCH_REGEX, parameter = "lng", string = {"^\\d{1,3}\\.\\d+$"}, failureCode = 2)
     })
     public Object address() {
         return geocoderService.address(request.get("lat"), request.get("lng"));

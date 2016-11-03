@@ -1,6 +1,5 @@
 package com.zoe.rus.uc.auth;
 
-import com.zoe.commons.util.Security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,8 +8,6 @@ import org.springframework.stereotype.Service;
  */
 @Service(AuthModel.NAME + ".service")
 public class AuthServiceImpl implements AuthService {
-    @Autowired
-    protected Security security;
     @Autowired
     protected AuthDao authDao;
 

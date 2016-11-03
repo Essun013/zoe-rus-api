@@ -1,12 +1,12 @@
 package com.zoe.rus.uc.user;
 
+import com.zoe.commons.crypto.Digest;
 import com.zoe.commons.ctrl.context.Session;
 import com.zoe.commons.freemarker.Freemarker;
 import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Generator;
 import com.zoe.commons.util.Logger;
 import com.zoe.commons.util.Message;
-import com.zoe.commons.util.Security;
 import com.zoe.commons.util.Validator;
 import com.zoe.rus.uc.auth.AuthModel;
 import com.zoe.rus.uc.auth.AuthService;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     private static final String PASSWORD = UserModel.NAME + ".service.password";
 
     @Autowired
-    protected Security security;
+    protected Digest digest;
     @Autowired
     protected Validator validator;
     @Autowired
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
     }
 
     protected String password(String password) {
-        return security.md5(security.md5(PASSWORD + password) + PASSWORD);
+        return digest.md5(digest.md5(PASSWORD + password) + PASSWORD);
     }
 
     @Override

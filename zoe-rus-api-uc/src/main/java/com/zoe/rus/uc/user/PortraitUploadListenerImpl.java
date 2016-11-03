@@ -18,18 +18,18 @@ public class PortraitUploadListenerImpl implements UploadListener {
     }
 
     @Override
-    public boolean isUploadEnable(String contentType, String name) {
+    public boolean isUploadEnable(String key, String contentType, String name) {
         return contentType.startsWith("/image/");
     }
 
     @Override
-    public String upload(String name, String size, String uri) {
+    public String upload(String key, String name, String size, String uri) {
         userService.portrait(uri);
         return uri;
     }
 
     @Override
-    public int[] getImageSize() {
+    public int[] getImageSize(String key) {
         return new int[]{256, 256};
     }
 }

@@ -75,4 +75,17 @@ public class ClassifyCtrl {
 
         return "";
     }
+
+    /**
+     * 获取分类信息树。
+     * key 引用key。
+     *
+     * @return [{}]。
+     */
+    @Execute(name = "tree", validates = {
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "key", failureCode = 12)
+    })
+    public Object tree() {
+        return classifyService.tree(request.get("key"));
+    }
 }

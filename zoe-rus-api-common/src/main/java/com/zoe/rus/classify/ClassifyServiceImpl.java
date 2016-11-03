@@ -1,9 +1,12 @@
 package com.zoe.rus.classify;
 
 import com.zoe.commons.cache.Cache;
+import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.commons.dao.orm.PageList;
 import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Validator;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,7 @@ import java.util.Set;
 @Service(ClassifyModel.NAME + ".service")
 public class ClassifyServiceImpl implements ClassifyService {
     private static final String CACHE_NAMES = ClassifyModel.NAME + ".service.names:";
+    private static final String CACHE_TREE = ClassifyModel.NAME + ".service.tree:";
     private static final String LINK_KEY = "link";
 
     @Autowired
@@ -26,6 +30,8 @@ public class ClassifyServiceImpl implements ClassifyService {
     protected Converter converter;
     @Autowired
     protected Cache cache;
+    @Autowired
+    protected ModelHelper modelHelper;
     @Autowired
     protected ClassifyDao classifyDao;
 
@@ -59,6 +65,7 @@ public class ClassifyServiceImpl implements ClassifyService {
     @Override
     public void delete(String key, Set<String> ignore) {
         classifyDao.delete(key, ignore);
+        cache.remove(CACHE_TREE + key);
     }
 
     @Override
@@ -70,6 +77,7 @@ public class ClassifyServiceImpl implements ClassifyService {
                 classify.setId(model.getId());
         }
         classifyDao.save(classify);
+        cache.remove(CACHE_TREE + classify.getKey());
     }
 
     @Override
@@ -169,5 +177,34 @@ public class ClassifyServiceImpl implements ClassifyService {
         });
 
         return set;
+    }
+
+    @Override
+    public JSONArray tree(String key) {
+        String cacheKey = CACHE_TREE + key;
+        JSONArray array = cache.get(cacheKey);
+        if (array == null) {
+            array = new JSONArray();
+            tree(array, classifyDao.root(key).getList());
+            cache.put(cacheKey, array, false);
+        }
+
+        return array;
+    }
+
+    protected void tree(JSONArray array, List<ClassifyModel> list) {
+        if (list.isEmpty())
+            return;
+
+        list.forEach(classify -> {
+            JSONObject object = modelHelper.toJson(classify);
+            List<ClassifyModel> children = classifyDao.children(classify.getId()).getList();
+            if (!children.isEmpty()) {
+                JSONArray arr = new JSONArray();
+                tree(arr, children);
+                object.put("children", arr);
+            }
+            array.add(object);
+        });
     }
 }

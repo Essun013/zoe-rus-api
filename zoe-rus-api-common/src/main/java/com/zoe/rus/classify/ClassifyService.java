@@ -1,5 +1,7 @@
 package com.zoe.rus.classify;
 
+import net.sf.json.JSONArray;
+
 import java.util.List;
 import java.util.Set;
 
@@ -30,4 +32,6 @@ public interface ClassifyService {
     void link(String name, String label);
 
     Set<String> links(String key, String name);
+
+    JSONArray tree(String key);
 }

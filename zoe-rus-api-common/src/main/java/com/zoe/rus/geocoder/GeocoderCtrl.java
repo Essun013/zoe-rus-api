@@ -21,7 +21,7 @@ public class GeocoderCtrl {
     /**
      * 获取GPS坐标对应的地址信息。
      *
-     * @return {address:"",component:{}}。
+     * @return {address:"",component:{},region:{}}。
      */
     @Execute(name = "address", validates = {
             @Validate(validator = Validators.MATCH_REGEX, parameter = "lat", string = {"^-?\\d{1,3}\\.\\d+$"}, failureCode = 1),

@@ -87,4 +87,19 @@ public class TimelineCtrl {
     public Object physical() {
         return timelineService.getPhysical();
     }
+
+    /**
+     * 设置阶段已完成。
+     * id 阶段ID。
+     *
+     * @return ""。
+     */
+    @Execute(name = "done", validates = {
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 4)
+    })
+    public Object done() {
+        timelineService.done(request.get("id"));
+
+        return "";
+    }
 }

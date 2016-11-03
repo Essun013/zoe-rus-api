@@ -1,6 +1,7 @@
 package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.ctrl.context.Request;
+import com.zoe.commons.ctrl.context.Response;
 import com.zoe.commons.ctrl.execute.Execute;
 import com.zoe.commons.ctrl.template.Templates;
 import com.zoe.commons.ctrl.validate.Validate;
@@ -18,7 +19,7 @@ public class KnowledgeCtrl {
     @Autowired
     protected Request request;
     @Autowired
-    protected Templates templates;
+    protected Response response;
     @Autowired
     protected KnowledgeService knowledgeService;
 
@@ -64,7 +65,7 @@ public class KnowledgeCtrl {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
     })
     public Object html() {
-        templates.get(Templates.STRING).setContentType("text/html");
+        response.setContentType("text/html");
         String html = knowledgeService.getHtml(request.get("id"));
 
         return html == null ? "" : html;

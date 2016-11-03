@@ -2,6 +2,7 @@ package com.zoe.rus.uc.timeline;
 
 import com.zoe.commons.ctrl.context.Session;
 import com.zoe.commons.dao.model.ModelHelper;
+import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Validator;
 import com.zoe.rus.milepost.physical.PhysicalModel;
 import com.zoe.rus.milepost.physical.PhysicalService;
@@ -31,6 +32,8 @@ public class TimelineServiceImpl implements TimelineService {
 
     @Autowired
     protected Validator validator;
+    @Autowired
+    protected Converter converter;
     @Autowired
     protected ModelHelper modelHelper;
     @Autowired
@@ -205,5 +208,21 @@ public class TimelineServiceImpl implements TimelineService {
         }
 
         return new JSONObject();
+    }
+
+    @Override
+    public void done(String id) {
+        JSONObject physical = timelineDao.getPhysical(get().getId());
+        JSONArray array = physical.getJSONArray("physical");
+        for (int i = 0, size = array.size(); i < size; i++) {
+            JSONObject object = array.getJSONObject(i);
+            if (object.get("id").equals(id)) {
+                object.put("done", converter.toString(new Date()));
+
+                break;
+            }
+        }
+        timelineDao.updatePhysical(get().getId(), physical);
+        set(get(), true);
     }
 }

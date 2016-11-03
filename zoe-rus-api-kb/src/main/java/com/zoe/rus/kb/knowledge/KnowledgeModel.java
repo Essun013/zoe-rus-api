@@ -31,6 +31,8 @@ public class KnowledgeModel extends ModelSupport {
     private String label; // 标签
     private String content; // 内容
     private String html; // HTML内容
+    private int read; // 阅读数
+    private int favorite; // 收藏数
 
     @Jsonable
     @Column(name = "c_classify")
@@ -140,5 +142,25 @@ public class KnowledgeModel extends ModelSupport {
 
     public void setHtml(String html) {
         this.html = html;
+    }
+
+    @Jsonable
+    @Column(name = "c_read")
+    public int getRead() {
+        return read;
+    }
+
+    public void setRead(int read) {
+        this.read = read;
+    }
+
+    @Jsonable
+    @Column(name = "c_favorite")
+    public int getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(int favorite) {
+        this.favorite = favorite;
     }
 }

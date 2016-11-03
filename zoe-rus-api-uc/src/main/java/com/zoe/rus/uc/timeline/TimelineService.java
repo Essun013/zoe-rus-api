@@ -17,4 +17,6 @@ public interface TimelineService {
     TimelineModel get();
 
     JSONObject getPhysical();
+
+    void done(String id);
 }

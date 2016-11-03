@@ -44,6 +44,8 @@ CREATE TABLE t_kb_knowledge
   c_label TEXT DEFAULT NULL COMMENT '标签',
   c_content TEXT DEFAULT NULL COMMENT '内容',
   c_html TEXT DEFAULT NULL COMMENT 'HTML内容',
+  c_read INT DEFAULT 0 COMMENT '阅读数',
+  c_favorite INT DEFAULT 0 COMMENT '收藏数',
 
   PRIMARY KEY pk_kb_knowledge(c_id),
   KEY k_kb_knowledge_classify(c_classify)

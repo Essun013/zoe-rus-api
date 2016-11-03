@@ -74,4 +74,9 @@ class KnowledgeDaoImpl implements KnowledgeDao {
 
         return liteOrm.query(new LiteQuery(KnowledgeModel.class).where(where.toString()).order("c_sort").size(pageSize).page(pageNum), args.toArray());
     }
+
+    @Override
+    public void read(String id) {
+        liteOrm.update(new LiteQuery(KnowledgeModel.class).set("c_read=c_read+1").where("c_id=?"), new Object[]{id});
+    }
 }

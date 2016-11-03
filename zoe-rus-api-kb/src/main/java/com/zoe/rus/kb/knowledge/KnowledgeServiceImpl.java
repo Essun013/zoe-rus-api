@@ -3,6 +3,7 @@ package com.zoe.rus.kb.knowledge;
 import com.zoe.commons.cache.Cache;
 import com.zoe.commons.ctrl.context.Request;
 import com.zoe.commons.dao.orm.PageList;
+import com.zoe.commons.scheduler.HourJob;
 import com.zoe.commons.util.Context;
 import com.zoe.commons.util.Converter;
 import com.zoe.commons.util.Generator;
@@ -37,7 +38,7 @@ import java.util.regex.Pattern;
  * @author lpw
  */
 @Service(KnowledgeModel.NAME + ".service")
-public class KnowledgeServiceImpl implements KnowledgeService {
+public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
     private static final String CLASSIFY_KEY = "kb.knowledge.classify";
     private static final String CACHE_JSON = KnowledgeModel.NAME + ".service.json:";
     private static final String CACHE_HTML = KnowledgeModel.NAME + ".service.html:";
@@ -125,6 +126,8 @@ public class KnowledgeServiceImpl implements KnowledgeService {
             object.put("thumbnail", knowledge.getThumbnail());
         object.put("summary", knowledge.getSummary());
         object.put("label", knowledge.getLabel());
+        object.put("read", knowledge.getRead());
+        object.put("favorite", knowledge.getFavorite());
 
         return object;
     }
@@ -140,6 +143,7 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
             cache.put(key, html = knowledge.getHtml(), false);
         }
+        knowledgeDao.read(id);
 
         return html;
     }
@@ -358,5 +362,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         HtmlRenderer renderer = HtmlRenderer.builder().build();
 
         return renderer.render(node).replaceAll(KnowledgeVisitor.EMPTY_PP, "").replaceAll(KnowledgeVisitor.EMPTY_P, "<p>");
+    }
+
+    @Override
+    public void executeHourJob() {
+        cacheRandom = generator.random(32);
     }
 }

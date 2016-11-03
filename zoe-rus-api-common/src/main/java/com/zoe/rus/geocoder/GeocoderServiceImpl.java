@@ -2,14 +2,11 @@ package com.zoe.rus.geocoder;
 
 import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.commons.util.Http;
-import com.zoe.rus.classify.ClassifyModel;
 import com.zoe.rus.classify.ClassifyService;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 /**
  * @author lpw
@@ -38,9 +35,8 @@ public class GeocoderServiceImpl implements GeocoderService {
         object.put("address", result.getString("address"));
         JSONObject component = result.getJSONObject("address_component");
         object.put("component", component);
-        List<ClassifyModel> list = classifyService.find("region", new String[]{component.getString("nation"),
-                component.getString("province"), component.getString("city"), component.getString("district")});
-        object.put("region", list.isEmpty() ? new JSONObject() : modelHelper.toJson(list.get(0)));
+        object.put("region", modelHelper.toJson(classifyService.find("region", new String[]{component.getString("nation"),
+                component.getString("province"), component.getString("city"), component.getString("district")})));
 
         return object;
     }

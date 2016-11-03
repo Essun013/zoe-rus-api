@@ -27,6 +27,8 @@ public class TimelineModel extends ModelSupport {
     private int type; // 类型：0-孕妈；1-宝宝
     private String name; // 名称
     private String portrait; // 头像
+    private String region; // 地区
+    private String hospital; // 医院
     private Date start; // 开始日期
     private int day; // 天数
     private int end; // 结束：0-进行中；1-已结束
@@ -79,6 +81,26 @@ public class TimelineModel extends ModelSupport {
 
     public void setPortrait(String portrait) {
         this.portrait = portrait;
+    }
+
+    @Jsonable
+    @Column(name = "c_region")
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    @Jsonable
+    @Column(name = "c_hospital")
+    public String getHospital() {
+        return hospital;
+    }
+
+    public void setHospital(String hospital) {
+        this.hospital = hospital;
     }
 
     @Jsonable

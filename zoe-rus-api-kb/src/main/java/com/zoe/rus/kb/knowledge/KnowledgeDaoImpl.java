@@ -57,6 +57,9 @@ class KnowledgeDaoImpl implements KnowledgeDao {
 
     @Override
     public PageList<KnowledgeModel> query(Set<String> classifies, int day, int pageSize, int pageNum) {
+        if (classifies.isEmpty())
+            return liteOrm.query(new LiteQuery(KnowledgeModel.class).where("c_start<=? and c_end>=?").order("c_sort").size(pageSize).page(pageNum), new Object[]{day, day});
+
         StringBuilder where = new StringBuilder("c_classify in(");
         List<Object> args = new ArrayList<>();
         classifies.forEach(classify -> {

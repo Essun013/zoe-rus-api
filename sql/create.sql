@@ -142,6 +142,8 @@ CREATE TABLE t_uc_timeline
   c_type INT DEFAULT 0 COMMENT '类型：0-孕妈；1-宝宝',
   c_name VARCHAR(255) DEFAULT NULL COMMENT '名称',
   c_portrait VARCHAR(255) DEFAULT NULL COMMENT '头像',
+  c_region CHAR(32) DEFAULT NULL COMMENT '地区',
+  c_hospital CHAR(32) DEFAULT NULL COMMENT '医院',
   c_start DATE NOT NULL COMMENT '开始日期',
   c_day INT DEFAULT 0 COMMENT '天数',
   c_end INT DEFAULT 0 COMMENT '结束：0-进行中；1-已结束',

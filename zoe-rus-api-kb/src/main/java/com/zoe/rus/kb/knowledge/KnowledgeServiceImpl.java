@@ -151,14 +151,10 @@ public class KnowledgeServiceImpl implements KnowledgeService {
         if (object == null) {
             object = new JSONObject();
             Set<String> ids = getIds(classify);
-            if (ids.isEmpty())
-                putPageInfo(object, 0, 0, 0, new JSONArray());
-            else {
-                PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, pagination.getPageSize(), pagination.getPageNum());
-                JSONArray array = new JSONArray();
-                pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
-                putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
-            }
+            PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, pagination.getPageSize(), pagination.getPageNum());
+            JSONArray array = new JSONArray();
+            pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
+            putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
             cache.put(key, object, false);
         }
 
@@ -167,6 +163,9 @@ public class KnowledgeServiceImpl implements KnowledgeService {
 
     protected Set<String> getIds(String[] classify) {
         Set<String> set = new HashSet<>();
+        if (validator.isEmpty(classify))
+            return set;
+
         List<ClassifyModel> list = classifyService.find(CLASSIFY_KEY, classify);
         if (list.isEmpty())
             set.addAll(classifyService.links(CLASSIFY_KEY, classify[0]));

@@ -79,9 +79,7 @@ public class KnowledgeCtrl {
      *
      * @return {count,page,number,list:[]}。
      */
-    @Execute(name = "query", type = Templates.STRING, validates = {
-            @Validate(validator = Validators.NOT_EMPTY, parameter = "classify", failureCode = 3)
-    })
+    @Execute(name = "query")
     public Object query() {
         return knowledgeService.query(request.getAsArray("classify"), request.getAsInt("day"));
     }

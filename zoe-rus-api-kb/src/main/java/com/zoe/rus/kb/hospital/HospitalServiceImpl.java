@@ -41,7 +41,6 @@ public class HospitalServiceImpl implements HospitalService {
             hospital.setId(null);
         hospitalDao.save(hospital);
         clearCache(hospital);
-
     }
 
     @Override

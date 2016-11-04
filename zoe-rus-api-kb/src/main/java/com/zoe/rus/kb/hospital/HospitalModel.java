@@ -20,10 +20,11 @@ import javax.persistence.Table;
 public class HospitalModel extends ModelSupport {
     static final String NAME = "rus.kb.hospital";
 
-    private String region;
-    private String name;
-    private String longitude;
-    private String latitude;
+    private String region; // 地区ID
+    private String name; // 名称
+    private String address; // 地址
+    private String longitude; // 经度
+    private String latitude; // 纬度
 
     @Jsonable
     @Column(name = "c_region")
@@ -43,6 +44,16 @@ public class HospitalModel extends ModelSupport {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Jsonable
+    @Column(name = "c_address")
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     @Jsonable

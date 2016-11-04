@@ -55,10 +55,11 @@ DROP TABLE IF EXISTS t_kb_hospital;
 CREATE TABLE t_kb_hospital
 (
   c_id CHAR(32) NOT NULL COMMENT '主键',
-  c_region CHAR(32) DEFAULT NULL COMMENT '分类ID',
-  c_name VARCHAR(255) NOT NULL COMMENT '标题',
-  c_longitude VARCHAR(255) NOT NULL COMMENT '经度',
-  c_latitude VARCHAR(255) NOT NULL COMMENT '纬度',
+  c_region CHAR(32) NOT NULL COMMENT '地区ID',
+  c_name VARCHAR(255) NOT NULL COMMENT '名称',
+  c_address VARCHAR(255) NOT NULL COMMENT '地址',
+  c_longitude VARCHAR(255) DEFAULT NULL COMMENT '经度',
+  c_latitude VARCHAR(255) DEFAULT NULL COMMENT '纬度',
 
   PRIMARY KEY pk_kb_hospital(c_id),
   KEY k_kb_hospital_region(c_region)

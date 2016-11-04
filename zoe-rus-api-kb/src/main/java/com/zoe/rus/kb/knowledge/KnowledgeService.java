@@ -6,6 +6,8 @@ import net.sf.json.JSONObject;
  * @author lpw
  */
 public interface KnowledgeService {
+    enum Favorite {Add, Remove}
+
     String PATH = "/kb";
 
     JSONObject get(String id);
@@ -14,7 +16,9 @@ public interface KnowledgeService {
 
     String getHtml(String id);
 
-    JSONObject query(String[] classify, int day);
+    JSONObject query(String[] classify, int day, boolean image);
+
+    void favorite(String id, Favorite favorite);
 
     void reload();
 }

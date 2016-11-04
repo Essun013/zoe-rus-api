@@ -75,6 +75,7 @@ public class KnowledgeCtrl {
      * 检索知识。
      * classify 分类，多个级间以逗号分割。
      * day 天数，即@PM设置的时间。
+     * image 仅获取有大图的知识，true/false。
      * pageSize 每页显示记录数。
      * pageNum 当前显示页数。
      *
@@ -82,7 +83,7 @@ public class KnowledgeCtrl {
      */
     @Execute(name = "query")
     public Object query() {
-        return knowledgeService.query(request.getAsArray("classify"), request.getAsInt("day"));
+        return knowledgeService.query(request.getAsArray("classify"), request.getAsInt("day"), "true".equals(request.get("image")));
     }
 
     /**

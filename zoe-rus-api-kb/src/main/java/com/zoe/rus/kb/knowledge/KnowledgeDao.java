@@ -16,7 +16,9 @@ interface KnowledgeDao {
 
     KnowledgeModel findBySubject(String classify, String subject);
 
-    PageList<KnowledgeModel> query(Set<String> classifies, int day, int pageSize, int pageNum);
+    PageList<KnowledgeModel> query(Set<String> classifies, int day, boolean image, int pageSize, int pageNum);
 
     void read(String id);
+
+    void favorite(String id,int n);
 }

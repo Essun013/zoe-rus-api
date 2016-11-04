@@ -149,15 +149,15 @@ public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
     }
 
     @Override
-    public JSONObject query(String[] classify, int day) {
+    public JSONObject query(String[] classify, int day, boolean image) {
         int pageSize = pagination.getPageSize();
         int pageNum = pagination.getPageNum();
-        String key = CACHE_LIST + cacheRandom + converter.toString(classify) + day + pageSize + pageNum;
+        String key = CACHE_LIST + cacheRandom + converter.toString(classify) + day + image + pageSize + pageNum;
         JSONObject object = cache.get(key);
         if (object == null) {
             object = new JSONObject();
             Set<String> ids = getIds(classify);
-            PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, pageSize, pageNum);
+            PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, image, pageSize, pageNum);
             JSONArray array = new JSONArray();
             pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
             putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
@@ -195,6 +195,11 @@ public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
         object.put("size", size);
         object.put("number", number);
         object.put("list", list);
+    }
+
+    @Override
+    public void favorite(String id, Favorite favorite) {
+        knowledgeDao.favorite(id, favorite == Favorite.Remove ? -1 : 1);
     }
 
     @Override

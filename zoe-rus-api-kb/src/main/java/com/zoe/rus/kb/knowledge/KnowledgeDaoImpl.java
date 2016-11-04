@@ -56,21 +56,26 @@ class KnowledgeDaoImpl implements KnowledgeDao {
     }
 
     @Override
-    public PageList<KnowledgeModel> query(Set<String> classifies, int day, int pageSize, int pageNum) {
-        if (classifies.isEmpty())
-            return liteOrm.query(new LiteQuery(KnowledgeModel.class).where("c_start<=? and c_end>=?").order("c_sort").size(pageSize).page(pageNum), new Object[]{day, day});
-
-        StringBuilder where = new StringBuilder("c_classify in(");
+    public PageList<KnowledgeModel> query(Set<String> classifies, int day, boolean image, int pageSize, int pageNum) {
+        StringBuilder where = new StringBuilder();
         List<Object> args = new ArrayList<>();
-        classifies.forEach(classify -> {
-            if (!args.isEmpty())
-                where.append(',');
-            where.append('?');
-            args.add(classify);
-        });
-        where.append(") and c_start<=? and c_end>=?");
+        if (!classifies.isEmpty()) {
+            where.append("c_classify in(");
+            classifies.forEach(classify -> {
+                if (!args.isEmpty())
+                    where.append(',');
+                where.append('?');
+                args.add(classify);
+            });
+            where.append(')');
+        }
+        if (!args.isEmpty())
+            where.append(" and ");
+        where.append("c_start<=? and c_end>=?");
         args.add(day);
         args.add(day);
+        if (image)
+            where.append(" and c_image is not null");
 
         return liteOrm.query(new LiteQuery(KnowledgeModel.class).where(where.toString()).order("c_sort").size(pageSize).page(pageNum), args.toArray());
     }
@@ -78,5 +83,10 @@ class KnowledgeDaoImpl implements KnowledgeDao {
     @Override
     public void read(String id) {
         liteOrm.update(new LiteQuery(KnowledgeModel.class).set("c_read=c_read+1").where("c_id=?"), new Object[]{id});
+    }
+
+    @Override
+    public void favorite(String id, int n) {
+        liteOrm.update(new LiteQuery(KnowledgeModel.class).set("c_favorite=c_favorite+?").where("c_id=?"), new Object[]{n, id});
     }
 }

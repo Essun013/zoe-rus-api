@@ -59,6 +59,10 @@ public class TimelineCtrl {
      *
      * @return ""。
      */
+    @Execute(name = "modify", validates = {
+            @Validate(validator = UserService.VALIDATOR_SIGN_IN, failureCode = 2),
+            @Validate(validator = HomeService.VALIDATOR_EXISTS, failureCode = 3)
+    })
     public Object modify() {
         timelineService.modify(request.getAsDate("lmp"), request.getAsDate("childbirth"), request.getAsDate("birthday"), request.get("region"), request.get("hospital"));
 

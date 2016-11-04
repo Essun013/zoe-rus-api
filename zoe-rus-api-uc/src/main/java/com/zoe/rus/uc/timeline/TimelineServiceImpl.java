@@ -113,6 +113,12 @@ public class TimelineServiceImpl implements TimelineService {
     public void modify(Date lmp, Date childbirth, Date birthday, String region, String hospital) {
         TimelineModel timeline = get();
         resetStart(timeline, lmp, childbirth, birthday);
+        if (!validator.isEmpty(region)) {
+            timeline.setRegion(region);
+            timeline.setHospital(null);
+        }
+        if (!validator.isEmpty(hospital))
+            timeline.setHospital(hospital);
         List<PhysicalModel> physicals = physicalService.query(region, hospital);
         if (!physicals.isEmpty()) {
             Map<Integer, JSONObject> map = new HashMap<>();
@@ -121,8 +127,6 @@ public class TimelineServiceImpl implements TimelineService {
             mergeToMap(map, physical(physicals), true);
             physical.put("physical", toArray(map));
         }
-        timeline.setRegion(region);
-        timeline.setHospital(hospital);
         timelineDao.save(timeline);
         set(timeline, true);
     }

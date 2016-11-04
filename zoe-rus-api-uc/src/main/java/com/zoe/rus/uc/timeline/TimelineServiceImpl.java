@@ -137,7 +137,7 @@ public class TimelineServiceImpl implements TimelineService {
             int sort = object1.getInt("sort");
             if (checkable) {
                 JSONObject object2 = map.get(sort);
-                if (object2.has("done"))
+                if (object2 == null || object2.has("done"))
                     continue;
             }
             map.put(sort, object1);

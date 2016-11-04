@@ -153,3 +153,17 @@ CREATE TABLE t_uc_timeline
   PRIMARY KEY pk_uc_timeline(c_id),
   KEY k_uc_timeline_home(c_home)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS t_uc_favorite;
+CREATE TABLE t_uc_favorite
+(
+  c_id CHAR(32) NOT NULL COMMENT '主键',
+  c_user CHAR(32) NOT NULL COMMENT '用户',
+  c_type INT DEFAULT 0 COMMENT '类型',
+  c_goal CHAR(32) NOT NULL COMMENT '目标',
+  c_time DATETIME NOT NULL COMMENT '时间',
+
+  PRIMARY KEY pk_uc_favorite(c_id),
+  UNIQUE KEY uk_uc_favorite_user_goal(c_user,c_goal),
+  KEY k_uc_favorite_user_type(c_user,c_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

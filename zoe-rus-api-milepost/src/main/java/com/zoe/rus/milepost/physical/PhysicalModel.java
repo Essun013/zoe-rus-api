@@ -1,7 +1,7 @@
 package com.zoe.rus.milepost.physical;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.rus.model.ModelSupport;
+import com.zoe.commons.dao.model.TephraModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = PhysicalModel.NAME)
 @Table(name = "t_milepost_physical")
-public class PhysicalModel extends ModelSupport {
+public class PhysicalModel extends TephraModelSupport {
     static final String NAME = "rus.milepost.physical";
 
     private String region; // 区域

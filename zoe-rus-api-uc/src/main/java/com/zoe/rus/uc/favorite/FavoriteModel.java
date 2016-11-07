@@ -1,7 +1,7 @@
 package com.zoe.rus.uc.favorite;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.rus.model.ModelSupport;
+import com.zoe.commons.dao.model.TephraModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
 import java.sql.Timestamp;
 
 /**
@@ -19,7 +18,7 @@ import java.sql.Timestamp;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = FavoriteModel.NAME)
 @Table(name = "t_uc_favorite")
-public class FavoriteModel extends ModelSupport {
+public class FavoriteModel extends TephraModelSupport {
     static final String NAME = "rus.uc.favorite";
 
     private String user; // 用户

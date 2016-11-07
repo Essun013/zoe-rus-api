@@ -1,7 +1,7 @@
 package com.zoe.rus.kb.hospital;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.rus.model.ModelSupport;
+import com.zoe.commons.dao.model.TephraModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = HospitalModel.NAME)
 @Table(name = "t_kb_hospital")
-public class HospitalModel extends ModelSupport {
+public class HospitalModel extends TephraModelSupport {
     static final String NAME = "rus.kb.hospital";
 
     private String region; // 地区ID

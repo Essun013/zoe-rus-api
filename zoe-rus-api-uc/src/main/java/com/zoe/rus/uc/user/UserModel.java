@@ -1,7 +1,7 @@
 package com.zoe.rus.uc.user;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.rus.model.ModelSupport;
+import com.zoe.commons.dao.model.TephraModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -9,9 +9,8 @@ import org.springframework.stereotype.Component;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-
-import java.sql.Timestamp;
 import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * @author lpw
@@ -20,7 +19,7 @@ import java.sql.Date;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = UserModel.NAME)
 @Table(name = "t_uc_user")
-public class UserModel extends ModelSupport {
+public class UserModel extends TephraModelSupport {
     static final String NAME = "rus.uc.user";
 
     private String home; // 家庭

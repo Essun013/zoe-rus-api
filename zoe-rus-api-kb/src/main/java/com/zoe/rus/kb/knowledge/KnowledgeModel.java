@@ -1,7 +1,7 @@
 package com.zoe.rus.kb.knowledge;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.rus.model.ModelSupport;
+import com.zoe.commons.dao.model.TephraModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = KnowledgeModel.NAME)
 @Table(name = "t_kb_knowledge")
-public class KnowledgeModel extends ModelSupport {
+public class KnowledgeModel extends TephraModelSupport {
     static final String NAME = "rus.kb.knowledge";
 
     private String classify; // 分类

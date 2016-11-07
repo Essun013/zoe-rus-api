@@ -1,7 +1,7 @@
 package com.zoe.rus.classify;
 
 import com.zoe.commons.dao.model.Jsonable;
-import com.zoe.rus.model.ModelSupport;
+import com.zoe.commons.dao.model.TephraModelSupport;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Scope(BeanDefinition.SCOPE_PROTOTYPE)
 @Entity(name = ClassifyModel.NAME)
 @Table(name = "t_common_classify")
-public class ClassifyModel extends ModelSupport {
+public class ClassifyModel extends TephraModelSupport {
     static final String NAME = "rus.common.classify";
 
     private String key; // 引用Key

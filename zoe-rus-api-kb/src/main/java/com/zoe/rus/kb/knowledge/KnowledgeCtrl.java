@@ -87,6 +87,21 @@ public class KnowledgeCtrl {
     }
 
     /**
+     * 搜索知识。
+     * kw 关键词。
+     * pageSize 每页显示记录数。
+     * pageNum 当前显示页数。
+     *
+     * @return {count,page,number,list:[]}。
+     */
+    @Execute(name = "search", validates = {
+            @Validate(validator = Validators.NOT_EMPTY, parameter = "kw", failureCode = 3)
+    })
+    public Object search() {
+        return knowledgeService.search(request.get("kw")).toJson();
+    }
+
+    /**
      * 重新生成知识。
      *
      * @return ""。

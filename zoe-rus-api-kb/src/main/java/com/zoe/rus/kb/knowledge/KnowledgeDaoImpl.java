@@ -89,4 +89,10 @@ class KnowledgeDaoImpl implements KnowledgeDao {
     public void favorite(String id, int n) {
         liteOrm.update(new LiteQuery(KnowledgeModel.class).set("c_favorite=c_favorite+?").where("c_id=?"), new Object[]{n, id});
     }
+
+    @Override
+    public PageList<KnowledgeModel> query(String keyword, int pageSize, int pageNum) {
+        return liteOrm.query(new LiteQuery(KnowledgeModel.class).where("c_subject like ?").size(pageSize).page(pageNum),
+                new Object[]{"%" + keyword.replaceAll("%", "") + "%"});
+    }
 }

@@ -203,6 +203,11 @@ public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
     }
 
     @Override
+    public PageList<KnowledgeModel> search(String keyword) {
+        return knowledgeDao.query(keyword, pagination.getPageSize(), pagination.getPageNum());
+    }
+
+    @Override
     public synchronized void reload() {
         clean();
         scan(null, new ClassifyModel(), new File(context.getAbsolutePath(PATH)));

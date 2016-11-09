@@ -1,5 +1,6 @@
 package com.zoe.rus.kb.knowledge;
 
+import com.zoe.commons.dao.orm.PageList;
 import net.sf.json.JSONObject;
 
 /**
@@ -19,6 +20,8 @@ public interface KnowledgeService {
     JSONObject query(String[] classify, int day, boolean image);
 
     void favorite(String id, Favorite favorite);
+
+    PageList<KnowledgeModel> search(String keyword);
 
     void reload();
 }

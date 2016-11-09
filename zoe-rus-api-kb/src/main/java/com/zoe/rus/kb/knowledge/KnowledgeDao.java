@@ -20,5 +20,7 @@ interface KnowledgeDao {
 
     void read(String id);
 
-    void favorite(String id,int n);
+    void favorite(String id, int n);
+
+    PageList<KnowledgeModel> query(String keyword, int pageSize, int pageNum);
 }

@@ -22,11 +22,13 @@ public class FavoriteCtrl {
     /**
      * 检索收藏。
      * type 类型：1-知识。
+     * pageSize 每页显示记录数。
+     * pageNum 当前显示页数。
      *
      * @return {}。
      */
     @Execute(name = "query", validates = {
-            @Validate(validator = Validators.BETWEEN, parameter = "goal", number = {1, 1}, failureCode = 1),
+            @Validate(validator = Validators.BETWEEN, parameter = "type", number = {1, 1}, failureCode = 1),
             @Validate(validator = UserService.VALIDATOR_SIGN_IN, failureCode = 3)
     })
     public Object query() {

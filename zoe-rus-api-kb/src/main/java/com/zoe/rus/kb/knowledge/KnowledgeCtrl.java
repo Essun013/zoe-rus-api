@@ -10,6 +10,9 @@ import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author lpw
  */
@@ -58,17 +61,20 @@ public class KnowledgeCtrl {
     /**
      * 获取HTML内容。
      * id 知识ID值。
+     * css CSS文件名，不包含后缀，同时引用多个CSS以逗号分割。
      *
      * @return ""。
      */
-    @Execute(name = "html", type = Templates.STRING, validates = {
+    @Execute(name = "html", type = Templates.FREEMARKER, template = "html", validates = {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "id", failureCode = 1)
     })
     public Object html() {
-        response.setContentType("text/html");
-        String html = knowledgeService.getHtml(request.get("id"));
+        Map<String, Object> map = new HashMap<>();
+        String[] css = request.getAsArray("css");
+        map.put("css", css.length == 0 ? new String[]{"md"} : css);
+        map.put("html", knowledgeService.getHtml(request.get("id")));
 
-        return html == null ? "" : html;
+        return map;
     }
 
     /**

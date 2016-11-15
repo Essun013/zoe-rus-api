@@ -19,8 +19,7 @@ public class PortraitUploadListenerImpl implements UploadListener {
 
     @Override
     public boolean isUploadEnable(String key, String contentType, String name) {
-        System.out.println("###" + key + "::" + contentType + "%%" + name + "**" + contentType.startsWith("/image/"));
-        return contentType.startsWith("/image/");
+        return contentType.startsWith("image/");
     }
 
     @Override

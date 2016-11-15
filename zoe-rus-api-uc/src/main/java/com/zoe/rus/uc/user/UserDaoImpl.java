@@ -24,6 +24,6 @@ class UserDaoImpl implements UserDao {
 
     @Override
     public void rollback() {
-        liteOrm.rollback();
+        liteOrm.fail(null);
     }
 }

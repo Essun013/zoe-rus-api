@@ -8,6 +8,8 @@ import net.sf.json.JSONObject;
 public interface FavoriteService {
     void save(int type, String goal);
 
+    boolean has(int type, String goal);
+
     void delete(String goal);
 
     JSONObject query(int type);

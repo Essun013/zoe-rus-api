@@ -54,6 +54,17 @@ public class FavoriteCtrl {
     }
 
     /**
+     * 验证是否已收藏。
+     * type 类型：1-知识。
+     * goal 目标ID。
+     *
+     * @return true/false。
+     */
+    public Object has() {
+        return favoriteService.has(request.getAsInt("type"), request.get("goal"));
+    }
+
+    /**
      * 删除收藏。
      * goal 目标ID。
      *

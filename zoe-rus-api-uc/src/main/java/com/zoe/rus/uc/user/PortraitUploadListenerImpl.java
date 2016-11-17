@@ -25,6 +25,7 @@ public class PortraitUploadListenerImpl implements UploadListener {
     @Override
     public String upload(String key, String name, String size, String uri) {
         userService.portrait(uri);
+
         return uri;
     }
 

@@ -51,6 +51,11 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
 
     @Override
+    public boolean has(int type, String goal) {
+        return favoriteDao.find(userService.get().getId(), goal) != null;
+    }
+
+    @Override
     public void delete(String goal) {
         FavoriteModel favorite = favoriteDao.find(userService.get().getId(), goal);
         if (favorite == null)

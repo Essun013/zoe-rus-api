@@ -104,7 +104,7 @@ public class KnowledgeCtrl {
             @Validate(validator = Validators.NOT_EMPTY, parameter = "kw", failureCode = 3)
     })
     public Object search() {
-        return knowledgeService.search(request.get("kw")).toJson();
+        return knowledgeService.search(request.get("kw"));
     }
 
     /**

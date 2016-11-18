@@ -21,7 +21,7 @@ public interface KnowledgeService {
 
     void favorite(String id, Favorite favorite);
 
-    PageList<KnowledgeModel> search(String keyword);
+    JSONObject search(String keyword);
 
     void reload();
 }

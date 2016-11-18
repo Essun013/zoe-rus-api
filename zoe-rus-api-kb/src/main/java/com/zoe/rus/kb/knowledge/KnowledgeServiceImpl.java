@@ -155,13 +155,9 @@ public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
         String key = CACHE_LIST + cacheRandom + converter.toString(classify) + day + image + pageSize + pageNum;
         JSONObject object = cache.get(key);
         if (object == null) {
-            object = new JSONObject();
             Set<String> ids = getIds(classify);
             PageList<KnowledgeModel> pl = knowledgeDao.query(ids, day, image, pageSize, pageNum);
-            JSONArray array = new JSONArray();
-            pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
-            putPageInfo(object, pl.getCount(), pl.getSize(), pl.getNumber(), array);
-            cache.put(key, object, false);
+            cache.put(key, object = toJson(pl), false);
         }
 
         return object;
@@ -190,11 +186,16 @@ public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
         return ids;
     }
 
-    protected void putPageInfo(JSONObject object, int count, int size, int number, JSONArray list) {
-        object.put("count", count);
-        object.put("size", size);
-        object.put("number", number);
-        object.put("list", list);
+    protected JSONObject toJson(PageList<KnowledgeModel> pl) {
+        JSONObject object = new JSONObject();
+        JSONArray array = new JSONArray();
+        pl.getList().forEach(knowledge -> array.add(toJson(knowledge)));
+        object.put("count", pl.getCount());
+        object.put("size", pl.getSize());
+        object.put("number", pl.getNumber());
+        object.put("list", array);
+
+        return object;
     }
 
     @Override
@@ -203,8 +204,8 @@ public class KnowledgeServiceImpl implements KnowledgeService, HourJob {
     }
 
     @Override
-    public PageList<KnowledgeModel> search(String keyword) {
-        return knowledgeDao.query(keyword, pagination.getPageSize(), pagination.getPageNum());
+    public JSONObject search(String keyword) {
+        return toJson(knowledgeDao.query(keyword, pagination.getPageSize(), pagination.getPageNum()));
     }
 
     @Override

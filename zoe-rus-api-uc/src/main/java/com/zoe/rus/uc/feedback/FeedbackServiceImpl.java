@@ -1,6 +1,5 @@
 package com.zoe.rus.uc.feedback;
 
-import com.zoe.commons.dao.model.ModelHelper;
 import com.zoe.rus.uc.user.UserService;
 import com.zoe.rus.util.Pagination;
 import net.sf.json.JSONArray;
@@ -15,8 +14,6 @@ import java.sql.Timestamp;
  */
 @Service(FeedbackModel.NAME + ".service")
 public class FeedbackServiceImpl implements FeedbackService {
-    @Autowired
-    protected ModelHelper modelHelper;
     @Autowired
     protected Pagination pagination;
     @Autowired
@@ -39,7 +36,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         JSONArray array = json.getJSONArray("list");
         for (int i = 0, size = array.size(); i < size; i++) {
             JSONObject object = array.getJSONObject(i);
-            object.put("user", modelHelper.toJson(userService.findById(object.getString("user"))));
+            object.put("user", userService.findJsonById(object.getString("user")));
         }
 
         return json;

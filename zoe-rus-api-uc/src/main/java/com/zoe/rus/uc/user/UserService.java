@@ -1,5 +1,7 @@
 package com.zoe.rus.uc.user;
 
+import net.sf.json.JSONObject;
+
 /**
  * @author lpw
  */
@@ -70,4 +72,6 @@ public interface UserService {
     void signOut();
 
     UserModel findById(String id);
+
+    JSONObject findJsonById(String id);
 }

@@ -12,6 +12,7 @@ import com.zoe.commons.util.Validator;
 import com.zoe.rus.uc.auth.AuthModel;
 import com.zoe.rus.uc.auth.AuthService;
 import com.zoe.rus.uc.home.HomeService;
+import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private static final String SESSION = UserModel.NAME + ".service.session";
     private static final String PASSWORD = UserModel.NAME + ".service.password";
     private static final String CACHE_ID = UserModel.NAME + ".service.id:";
+    private static final String CACHE_ID_JSON = UserModel.NAME + ".service.id.json:";
 
     @Autowired
     protected Digest digest;
@@ -158,6 +160,7 @@ public class UserServiceImpl implements UserService {
         userDao.save(user);
         session.set(SESSION, user);
         cache.remove(CACHE_ID + user.getId());
+        cache.remove(CACHE_ID_JSON + user.getId());
     }
 
     @Override
@@ -173,5 +176,27 @@ public class UserServiceImpl implements UserService {
             cache.put(key, user = userDao.findById(id), false);
 
         return user;
+    }
+
+    @Override
+    public JSONObject findJsonById(String id) {
+        String key = CACHE_ID_JSON + id;
+        JSONObject object = cache.get(key);
+        if (object == null) {
+            UserModel user = findById(id);
+            if (user == null)
+                return null;
+
+            object = new JSONObject();
+            object.put("name", user.getName());
+            object.put("nick", user.getNick());
+            object.put("mobile", user.getMobile());
+            object.put("portrait", user.getPortrait());
+            object.put("gender", user.getGender());
+            object.put("address", user.getAddress());
+            cache.put(key, object, false);
+        }
+
+        return object;
     }
 }

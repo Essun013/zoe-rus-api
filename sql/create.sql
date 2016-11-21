@@ -168,3 +168,14 @@ CREATE TABLE t_uc_favorite
   UNIQUE KEY uk_uc_favorite_user_goal(c_user,c_goal),
   KEY k_uc_favorite_user_type(c_user,c_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS t_uc_feedback;
+CREATE TABLE t_uc_feedback
+(
+  c_id CHAR(32) NOT NULL COMMENT '主键',
+  c_user CHAR(32) DEFAULT NULL COMMENT '用户',
+  c_content TEXT DEFAULT NULL COMMENT '内容',
+  c_time DATETIME DEFAULT NULL COMMENT '时间',
+
+  PRIMARY KEY pk_uc_feedback(c_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

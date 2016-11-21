@@ -1,5 +1,6 @@
 package com.zoe.rus.uc.user;
 
+import com.zoe.commons.cache.Cache;
 import com.zoe.commons.crypto.Digest;
 import com.zoe.commons.ctrl.context.Session;
 import com.zoe.commons.freemarker.Freemarker;
@@ -23,9 +24,12 @@ import java.sql.Timestamp;
 public class UserServiceImpl implements UserService {
     private static final String SESSION = UserModel.NAME + ".service.session";
     private static final String PASSWORD = UserModel.NAME + ".service.password";
+    private static final String CACHE_ID = UserModel.NAME + ".service.id:";
 
     @Autowired
     protected Digest digest;
+    @Autowired
+    protected Cache cache;
     @Autowired
     protected Validator validator;
     @Autowired
@@ -83,7 +87,7 @@ public class UserServiceImpl implements UserService {
         if (auth == null)
             return null;
 
-        UserModel user = userDao.findById(auth.getUser());
+        UserModel user = findById(auth.getUser());
         if (user == null || (auth.getType() == 1 && !user.getPassword().equals(password(password))))
             return null;
 
@@ -153,10 +157,21 @@ public class UserServiceImpl implements UserService {
     private void save(UserModel user) {
         userDao.save(user);
         session.set(SESSION, user);
+        cache.remove(CACHE_ID + user.getId());
     }
 
     @Override
     public void signOut() {
         session.remove(SESSION);
+    }
+
+    @Override
+    public UserModel findById(String id) {
+        String key = CACHE_ID + id;
+        UserModel user = cache.get(key);
+        if (user == null)
+            cache.put(key, user = userDao.findById(id), false);
+
+        return user;
     }
 }
